@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+
 #include "defines.h"
 
 #include <assimp/Importer.hpp>

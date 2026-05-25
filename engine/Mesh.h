@@ -8,6 +8,7 @@
 
 #include "defines.h"
 #include "Material.h"
+#include "glad/glad.h"
 
 
 struct Vertex {
@@ -35,13 +36,21 @@ public:
   Mesh(
     const std::vector<Vertex>& vertices,
     const std::vector<idx>& indices,
-    const Material& material): vertices_(vertices), indices_(indices), material_(material) {}
+    Material material);
 
-  ~Mesh() = default;
+  ~Mesh();
 
   std::vector<Vertex> vertices_;
   std::vector<idx> indices_;
-  Material material_; //TODO: make this through an shered pointer
+  Material material_; //TODO: make this through an shared pointer
+
+  Mesh(const Mesh&) = delete;
+  Mesh& operator=(const Mesh&) = delete;
+
+  Mesh(Mesh&& other) noexcept;
+  Mesh& operator=(Mesh&& other) noexcept;
+
+  void draw(GLuint shader_program) const;
 
   friend std::ostream& operator<<(std::ostream& os, const Mesh& mesh) {
     os << "Mesh{vertices=[";
@@ -65,7 +74,8 @@ public:
   }
 
 private:
-  uint VAO_;
-  uint VBO_;
-  uint EBO_;
+  uint VAO_=0;
+  uint VBO_=0;
+  uint EBO_=0;
+  void setupMesh();
 };
