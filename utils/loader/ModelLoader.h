@@ -31,22 +31,24 @@ public:
 
         Model model;
         model.directory_ = path;
-        std::vector<Mesh> meshes;
-        meshes.reserve(scene->mNumMeshes);
-        for (int i = 0; i < scene->mNumMeshes; i++) {
+
+        model.meshes_.reserve(scene->mNumMeshes);
+
+        for (unsigned int i = 0; i < scene->mNumMeshes; ++i) {
             aiMesh* ai_mesh = scene->mMeshes[i];
 
             auto vertices = extractVerticesFromAiMesh(ai_mesh);
             auto indices = extractIndicesFromAiMesh(ai_mesh);
 
-
             aiMaterial* ai_material = scene->mMaterials[ai_mesh->mMaterialIndex];
             auto material = extractMaterialFromAiMaterial(ai_material);
 
-
-            meshes.emplace_back(std::move(vertices), std::move(indices), std::move(material));
+            model.meshes_.emplace_back(
+                std::move(vertices),
+                std::move(indices),
+                std::move(material)
+            );
         }
-        model.meshes_ = meshes;
 
         return model;
     }
