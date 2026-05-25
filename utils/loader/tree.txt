@@ -1,0 +1,42 @@
+scene
+├── mMeshes
+│   ├── aiMesh #0
+│   │   ├── mVertices
+│   │   ├── mNormals
+│   │   ├── mTextureCoords
+│   │   ├── mFaces
+│   │   │   └── mIndices
+│   │   └── mMaterialIndex
+│   │
+│   └── aiMesh #1
+│       ├── mVertices
+│       ├── mNormals
+│       ├── mTextureCoords
+│       ├── mFaces
+│       │   └── mIndices
+│       └── mMaterialIndex
+│
+├── mMaterials
+│   ├── aiMaterial #0
+│   │   ├── diffuse color
+│   │   ├── specular color
+│   │   ├── shininess
+│   │   └── texture paths
+│   │
+│   └── aiMaterial #1
+│       ├── diffuse color
+│       ├── specular color
+│       ├── shininess
+│       └── texture paths
+│
+└── mRootNode
+    ├── mTransformation
+    ├── mMeshes: indices into scene.mMeshes
+    └── mChildren
+        ├── child node
+        │   ├── mTransformation
+        │   └── mMeshes: indices into scene.mMeshes
+        │
+        └── child node
+            ├── mTransformation
+            └── mMeshes: indices into scene.mMeshes
