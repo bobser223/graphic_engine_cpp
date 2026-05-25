@@ -25,26 +25,28 @@ public:
     ModelLoader() = default;
     ~ModelLoader() = default;
 
-    static Model loadModel(const std::string& path, unsigned int flags) { //TODO: use general importer
+    static Model loadModel(const std::string& path, unsigned int flags = aiProcess_Triangulate) { //TODO: use general importer
         Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(path, flags);
 
         Model model;
-        std::vector<Mesh> mashes((int)scene->mNumMeshes);
+        model.directory_ = path;
+        std::vector<Mesh> meshes;
+        meshes.reserve(scene->mNumMeshes);
         for (int i = 0; i < scene->mNumMeshes; i++) {
             aiMesh* ai_mesh = scene->mMeshes[i];
 
-            auto verts = ai_mesh->mVertices;
-            auto indices = ai_mesh->mFaces->mIndices;
-            auto normals = ai_mesh->mNormals;
+            auto vertices = extractVerticesFromAiMesh(ai_mesh);
+            auto indices = extractIndicesFromAiMesh(ai_mesh);
 
 
-            Mesh mash;
+            aiMaterial* ai_material = scene->mMaterials[ai_mesh->mMaterialIndex];
+            auto material = extractMaterialFromAiMaterial(ai_material);
 
 
-
+            meshes.emplace_back(std::move(vertices), std::move(indices), std::move(material));
         }
-        model.meshes_ = mashes;
+        model.meshes_ = meshes;
 
         return model;
     }
@@ -72,7 +74,7 @@ public:
     }
 
 
-    std::vector<Vertex> extractVerticesFromAiMesh(const aiMesh* ai_mesh) {
+    static std::vector<Vertex> extractVerticesFromAiMesh(const aiMesh* ai_mesh) {
         if (ai_mesh == nullptr) {
             throw std::runtime_error("Invalid input: ai_mesh is null");
         }
@@ -125,6 +127,61 @@ public:
         }
 
         return result;
+    }
+
+    static std::vector<idx> extractIndicesFromAiMesh(const aiMesh* ai_mesh) {
+        std::vector<idx> indices;
+        constexpr int index_per_vertex = 3;
+        indices.reserve(ai_mesh->mNumFaces * index_per_vertex);
+
+        for (unsigned int i = 0; i < ai_mesh->mNumFaces; ++i) {
+            const aiFace& face = ai_mesh->mFaces[i];
+
+            for (unsigned int j = 0; j < face.mNumIndices; ++j) {
+                indices.push_back(face.mIndices[j]);
+            }
+        }
+
+        return indices;
+    }
+
+    static Material extractMaterialFromAiMaterial(const aiMaterial* ai_material) {
+        Material material;
+
+        aiColor3D color;
+
+        if (ai_material->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS) {
+            material.diffuse_color = glm::vec3(color.r, color.g, color.b);
+        }
+
+        if (ai_material->Get(AI_MATKEY_COLOR_SPECULAR, color) == AI_SUCCESS) {
+            material.specular_color = glm::vec3(color.r, color.g, color.b);
+        }
+
+        if (ai_material->Get(AI_MATKEY_COLOR_AMBIENT, color) == AI_SUCCESS) {
+            material.ambient_color = glm::vec3(color.r, color.g, color.b);
+        }
+
+        float shininess;
+        if (ai_material->Get(AI_MATKEY_SHININESS, shininess) == AI_SUCCESS) {
+            material.shininess = shininess;
+        }
+
+        aiString texture_path;
+
+        if (ai_material->GetTexture(aiTextureType_DIFFUSE, 0, &texture_path) == AI_SUCCESS) {
+            material.diffuse_texture_path = texture_path.C_Str();
+        }
+
+        if (ai_material->GetTexture(aiTextureType_SPECULAR, 0, &texture_path) == AI_SUCCESS) {
+            material.specular_texture_path = texture_path.C_Str();
+        }
+
+        if (ai_material->GetTexture(aiTextureType_NORMALS, 0, &texture_path) == AI_SUCCESS) {
+            material.normal_texture_path = texture_path.C_Str();
+        }
+
+        return material;
     }
 
 };
