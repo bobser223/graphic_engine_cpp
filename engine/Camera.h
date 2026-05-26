@@ -27,7 +27,7 @@ public:
   glm::vec3 camera_front_ = glm::vec3(0.0f, 0.0f, -1.0f); // куди дивиться
   glm::vec3 camera_up_ = glm::vec3(0.0f, 1.0f, 0.0f);     // up
 
-  [[nodiscard]] inline float getVelocity(float delta_time) const {
+  [[nodiscard]] inline float getVelocity(const float delta_time) const {
     return delta_time * camera_speed_;
   }
 
@@ -39,78 +39,78 @@ public:
     return glm::lookAt(camera_pos_, camera_pos_ + camera_front_, camera_up_);
   }
 
-  void goToward(float delta_time) {
-
+  inline void goToward(const float delta_time) {
     camera_pos_ += camera_front_ * getVelocity(delta_time);
   }
 
-  void goBack(float delta_time) {
-
+  inline void goBack(const float delta_time) {
     camera_pos_ -= camera_front_ * getVelocity(delta_time);
   }
 
-  void goRight(float delta_time) {
+  inline void goRight(const float delta_time) {
     camera_pos_ += getCameraRight() * getVelocity(delta_time);
   }
 
-  void goLeft(float delta_time) {
+  inline void goLeft(const float delta_time) {
     camera_pos_ -= getCameraRight() * getVelocity(delta_time);
   }
 
-  void goUp(float delta_time) {
+  inline void goUp(const float delta_time) {
     camera_pos_ += camera_up_ * getVelocity(delta_time);
   }
 
-  void goDown(float delta_time) {
+  inline void goDown(const float delta_time) {
     camera_pos_ -= camera_up_ * getVelocity(delta_time);
   }
 
-  void rotateYawClockwiseByDegrees(float degrees) {
+  inline void rotateYawClockwiseByDegrees(const float degrees) {
     yaw_ += degrees;
     updateCameraFront();
   }
 
-  void rotateYawClockwiseByTime(float delta_time) {
+  inline void rotateYawClockwiseByTime(const float delta_time) {
     rotateYawClockwiseByDegrees(delta_time * rotation_speed_);
   }
 
-  void rotateYawCounterClockwiseByDegrees(float degrees) {
+  inline void rotateYawCounterClockwiseByDegrees(const float degrees) {
     yaw_ -= degrees;
     updateCameraFront();
   }
 
-  void rotateYawCounterClockwiseByTime(float delta_time) {
+  inline void rotateYawCounterClockwiseByTime(const float delta_time) {
     rotateYawCounterClockwiseByDegrees(delta_time * rotation_speed_);
   }
 
-  void rotatePitchUpByDegrees(float degrees) {
+  inline void rotatePitchUpByDegrees(const float degrees) {
     pitch_ += degrees;
     clampPitch();
     updateCameraFront();
   }
 
-  void rotatePitchUpByTime(float delta_time) {
+  inline void rotatePitchUpByTime(const float delta_time) {
     rotatePitchUpByDegrees(delta_time * rotation_speed_);
   }
 
-  void rotatePitchDownByDegrees(float degrees) {
+  inline void rotatePitchDownByDegrees(const float degrees) {
     pitch_ -= degrees;
     clampPitch();
     updateCameraFront();
   }
 
-  void rotatePitchDownByTime(float delta_time) {
+  inline void rotatePitchDownByTime(const float delta_time) {
     rotatePitchDownByDegrees(delta_time * rotation_speed_);
   }
 
-  void rotateByMouseOffset(float xoffset, float yoffset) {
+  inline void rotateByMouseOffset(const float xoffset, const float yoffset) {
     yaw_ += xoffset * mouse_sensitivity_;
     pitch_ += yoffset * mouse_sensitivity_;
 
     clampPitch();
     updateCameraFront();
   }
-  void rotateByMouseOffset(float xoffset, float yoffset, float sensitivity) {
+
+  inline void rotateByMouseOffset(const float xoffset, const float yoffset,
+                                  const float sensitivity) {
     yaw_ += xoffset * sensitivity;
     pitch_ += yoffset * sensitivity;
 
@@ -119,9 +119,9 @@ public:
   }
 
 private:
-  void clampPitch() { pitch_ = std::clamp(pitch_, -89.0f, 89.0f); }
+  inline void clampPitch() { pitch_ = std::clamp(pitch_, -89.0f, 89.0f); }
 
-  void updateCameraFront() {
+  inline void updateCameraFront() {
     glm::vec3 front;
 
     front.x = std::cos(glm::radians(yaw_)) * std::cos(glm::radians(pitch_));
