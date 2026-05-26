@@ -65,6 +65,8 @@ add_executable(file_test
         engine/Material.h
         tests/loader/loader_test_001.cpp
         tests/scene/scene_test_001.cpp
+        engine/Camera.cpp
+        engine/Camera.h
 )
 
 target_link_libraries(file_test ${libs}

@@ -11,6 +11,7 @@
 #include "../../engine/Material.h"
 #include "../../engine/Model.h"
 #include "../../utils/loader/ModelLoader.h"
+#include "../../engine/Camera.h"
 
 #include "defines.h"
 #include "reader.h"
@@ -79,11 +80,9 @@ int main() {
 
     Model loaded_model = ModelLoader::loadModel(PROJECT_PATH / "data/cube.obj");
 
-    glm::mat4 view = glm::lookAt(
-        glm::vec3(0.0f, 1.5f, 6.0f),
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3(0.0f, 1.0f, 0.0f)
-    );
+    Camera camera;
+
+    glm::mat4 view = camera.getViewMatrix();
 
     glm::mat4 projection = glm::perspective(
         glm::radians(45.0f),
@@ -92,7 +91,58 @@ int main() {
         100.0f
     );
 
+
+    float rotation_speed = 90.0f;
+    float last_frame_time = 0.0f;
     while (!glfwWindowShouldClose(window)) {
+        auto current_frame_time = static_cast<float>(glfwGetTime());
+        float delta_time = current_frame_time - last_frame_time;
+        last_frame_time = current_frame_time;
+
+
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+            camera.goToward(delta_time);
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+            camera.goBack(delta_time);
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+            camera.goLeft(delta_time);
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+            camera.goRight(delta_time);
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+            camera.goUp(delta_time);
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+            camera.goDown(delta_time);
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+            camera.rotatePitchUpByDegrees(delta_time*rotation_speed);
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+            camera.rotatePitchDownByDegrees(delta_time*rotation_speed);
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+            camera.rotateYawClockwiseByDegrees(delta_time*rotation_speed);
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+            camera.rotateYawCounterClockwiseByDegrees(delta_time*rotation_speed);
+        }
+
+        glm::mat4 view = camera.getViewMatrix();
+
+
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             glfwSetWindowShouldClose(window, true);
         }
