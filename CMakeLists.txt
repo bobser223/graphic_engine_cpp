@@ -73,6 +73,8 @@ add_executable(file_test
         tests/loader/loader_test_002.cpp
         utils/logger/Logger.cpp
         utils/logger/Logger.h
+        engine/Shader.cpp
+        engine/Shader.h
 )
 
 target_link_libraries(file_test ${libs}
