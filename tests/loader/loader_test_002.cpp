@@ -60,7 +60,10 @@ int main() {
 
     LOG_INFO("Minimal OpenGL context initialized for loader_test_002");
 
-    auto a = ModelLoader::loadModel(PROJECT_PATH/ "data/cube.obj");
+    auto a = ModelLoader::loadModel(
+        PROJECT_PATH / "data/plate/plate.obj",
+        aiProcess_Triangulate | aiProcess_GenSmoothNormals
+    );
     LOG_INFO("Loaded model: ", a);
     std::cout << a << std::endl;
 
