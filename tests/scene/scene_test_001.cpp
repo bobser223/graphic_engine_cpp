@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -16,12 +17,16 @@
 #include "defines.h"
 #include "reader.h"
 #include "creator.h"
+#include "Logger.h"
 
 int main() {
+    LOG_INFO("Starting scene_test_001");
+
     if (!glfwInit()) {
-        std::cerr << "Failed to initialize GLFW\n";
+        LOG_ERROR("Failed to initialize GLFW");
         return -1;
     }
+    LOG_INFO("GLFW initialized");
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -40,19 +45,21 @@ int main() {
     );
 
     if (window == nullptr) {
-        std::cerr << "Failed to create GLFW window\n";
+        LOG_ERROR("Failed to create GLFW window");
         glfwTerminate();
         return -1;
     }
+    LOG_INFO("GLFW window created: 640x480");
 
     glfwMakeContextCurrent(window);
 
     if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
-        std::cerr << "Failed to initialize GLAD\n";
+        LOG_ERROR("Failed to initialize GLAD");
         glfwDestroyWindow(window);
         glfwTerminate();
         return -1;
     }
+    LOG_INFO("GLAD initialized");
 
     glEnable(GL_DEPTH_TEST);
 
@@ -71,6 +78,18 @@ int main() {
     glAttachShader(shader_program, fragment_shader);
     glLinkProgram(shader_program);
 
+    GLint link_success = 0;
+    glGetProgramiv(shader_program, GL_LINK_STATUS, &link_success);
+    if (link_success == GL_FALSE) {
+        GLint log_length = 0;
+        glGetProgramiv(shader_program, GL_INFO_LOG_LENGTH, &log_length);
+        std::string info_log(static_cast<size_t>(log_length), '\0');
+        glGetProgramInfoLog(shader_program, log_length, nullptr, info_log.data());
+        LOG_ERROR("Shader program link failed: ", info_log);
+    } else {
+        LOG_INFO("Shader program linked successfully: id=", shader_program);
+    }
+
     glDeleteShader(vertex_shader);
     glDeleteShader(fragment_shader);
 
@@ -78,7 +97,8 @@ int main() {
     GLint view_location = glGetUniformLocation(shader_program, "view");
     GLint projection_location = glGetUniformLocation(shader_program, "projection");
 
-    Model loaded_model = ModelLoader::loadModel(PROJECT_PATH / "data/cube.obj");
+    Model loaded_model = ModelLoader::loadModel(PROJECT_PATH / "data"/"cube.obj");
+    LOG_INFO("Scene model ready: meshes=", loaded_model.meshes_.size());
 
     Camera camera;
 
@@ -187,9 +207,11 @@ int main() {
     }
 
     glDeleteProgram(shader_program);
+    LOG_INFO("Deleted shader program: id=", shader_program);
 
     glfwDestroyWindow(window);
     glfwTerminate();
 
+    LOG_INFO("scene_test_001 completed");
     return 0;
 }

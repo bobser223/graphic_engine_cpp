@@ -5,7 +5,7 @@
 
 #include "texture_creator.h"
 
-#include <iostream>
+#include "Logger.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -14,6 +14,8 @@ GLuint createTextureFromFile(
     const std::filesystem::path& texture_path,
     bool flip_vertically
 ) {
+    LOG_INFO("Creating texture from file: ", texture_path, ", flip_vertically=", flip_vertically);
+
     GLuint texture_id;
     glGenTextures(1, &texture_id);
     glBindTexture(GL_TEXTURE_2D, texture_id);
@@ -41,9 +43,7 @@ GLuint createTextureFromFile(
     );
 
     if (!data) {
-        std::cerr << "Failed to load texture: "
-                  << texture_path
-                  << std::endl;
+        LOG_ERROR("Failed to load texture: ", texture_path);
 
         glDeleteTextures(1, &texture_id);
         return 0;
@@ -58,11 +58,7 @@ GLuint createTextureFromFile(
     } else if (channels == 4) {
         format = GL_RGBA;
     } else {
-        std::cerr << "Unsupported texture channel count: "
-                  << channels
-                  << " in file: "
-                  << texture_path
-                  << std::endl;
+        LOG_ERROR("Unsupported texture channel count: ", channels, " in file: ", texture_path);
 
         stbi_image_free(data);
         glDeleteTextures(1, &texture_id);
@@ -86,6 +82,13 @@ GLuint createTextureFromFile(
     stbi_image_free(data);
 
     glBindTexture(GL_TEXTURE_2D, 0);
+
+    LOG_INFO(
+        "Texture created successfully: ", texture_path,
+        " id=", texture_id,
+        " size=", width, "x", height,
+        " channels=", channels
+    );
 
     return texture_id;
 }

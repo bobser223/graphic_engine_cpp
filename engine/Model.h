@@ -9,6 +9,7 @@
 
 
 #include "defines.h"
+#include "Logger.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -34,6 +35,7 @@ public:
   std::string directory_;
 
   void draw(GLuint shader_program) const {
+    LOG_TRACE("Drawing model from directory=", directory_, ", meshes=", meshes_.size());
     for (const Mesh& mesh : meshes_) {
       mesh.draw(shader_program);
     }

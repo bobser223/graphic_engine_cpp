@@ -10,6 +10,7 @@ include_directories(utils/loader)
 include_directories(utils/points_utils)
 include_directories(utils/shader_utils)
 include_directories(utils/texture_utils)
+include_directories(utils/logger)
 
 
 
@@ -40,6 +41,8 @@ add_executable(main
         new_tech_test/fileReaderTest.h
         utils/points_utils/points_expander.cpp
         utils/points_utils/points_expander.h
+        utils/logger/Logger.cpp
+        utils/logger/Logger.h
 
 )
 
@@ -67,14 +70,17 @@ add_executable(file_test
         tests/scene/scene_test_001.cpp
         engine/Camera.cpp
         engine/Camera.h
+        tests/loader/loader_test_002.cpp
+        utils/logger/Logger.cpp
+        utils/logger/Logger.h
 )
 
 target_link_libraries(file_test ${libs}
         assimp::assimp
 )
 
-add_executable(loader_test_001
-        tests/loader/loader_test_001.cpp
+add_executable(loader_test_002
+        tests/loader/loader_test_002.cpp
         utils/shader_utils/creator.cpp
         utils/shader_utils/reader.cpp
         utils/texture_utils/texture_creator.cpp
@@ -88,9 +94,11 @@ add_executable(loader_test_001
         new_tech_test/fileReaderTest.h
         utils/points_utils/points_expander.cpp
         utils/points_utils/points_expander.h
+        utils/logger/Logger.cpp
+        utils/logger/Logger.h
 )
 
-target_link_libraries(loader_test_001 ${libs}
+target_link_libraries(loader_test_002 ${libs}
         assimp::assimp
 )
 
@@ -110,12 +118,13 @@ add_executable(scene_test_001
         new_tech_test/fileReaderTest.h
         utils/points_utils/points_expander.cpp
         utils/points_utils/points_expander.h
+        utils/logger/Logger.cpp
+        utils/logger/Logger.h
 )
 
 target_link_libraries(scene_test_001 ${libs}
         assimp::assimp
 )
-
 
 
 

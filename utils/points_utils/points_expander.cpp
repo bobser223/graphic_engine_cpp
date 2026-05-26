@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <limits>
 
+#include "Logger.h"
+
 
 std::vector<double> addColorsToPoints(
     const std::vector<double>& points,
@@ -14,6 +16,17 @@ std::vector<double> addColorsToPoints(
     ) {
 
     constexpr int values_per_color = 3;
+
+    LOG_DEBUG(
+        "Adding colors to points: points_values=", points.size(),
+        ", colors=", colors.size(),
+        ", numbers_per_point=", numbers_per_point
+    );
+
+    if (colors.empty()) {
+        LOG_WARN("Cannot add colors: color list is empty");
+        return points;
+    }
 
     size_t point_count = points.size() / numbers_per_point;
 
@@ -37,6 +50,7 @@ std::vector<double> addColorsToPoints(
         j %= colors.size();
     }
 
+    LOG_INFO("Colors added to ", point_count, " points");
     return result;
 }
 
@@ -47,6 +61,10 @@ std::vector<double> normalizePointPositions(
     constexpr size_t position_components = 3;
 
     if (points.empty() || numbers_per_point < position_components) {
+        LOG_WARN(
+            "Skipping point normalization: points_values=", points.size(),
+            ", numbers_per_point=", numbers_per_point
+        );
         return points;
     }
 
@@ -77,6 +95,7 @@ std::vector<double> normalizePointPositions(
     const double max_dimension = std::max({width, height, depth});
 
     if (max_dimension == 0.0) {
+        LOG_WARN("Skipping point normalization: all points have the same position");
         return points;
     }
 
@@ -90,6 +109,14 @@ std::vector<double> normalizePointPositions(
         normalized[dst + 2] = (normalized[dst + 2] - min_z) / max_dimension;
     }
 
+    LOG_INFO(
+        "Normalized ", point_count,
+        " points with bounds min=(",
+        min_x, ", ", min_y, ", ", min_z,
+        "), max=(",
+        max_x, ", ", max_y, ", ", max_z,
+        ")"
+    );
+
     return normalized;
 }
-

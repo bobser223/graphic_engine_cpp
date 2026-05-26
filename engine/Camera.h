@@ -14,6 +14,8 @@
 #include <glm/trigonometric.hpp>
 #include <glm/vec3.hpp>
 
+#include "Logger.h"
+
 class Camera {
 public:
   float camera_speed_ = 3.0f;
@@ -41,26 +43,32 @@ public:
 
   inline void goToward(const float delta_time) {
     camera_pos_ += camera_front_ * getVelocity(delta_time);
+    LOG_TRACE("Camera moved toward: dt=", delta_time, ", pos=(", camera_pos_.x, ", ", camera_pos_.y, ", ", camera_pos_.z, ")");
   }
 
   inline void goBack(const float delta_time) {
     camera_pos_ -= camera_front_ * getVelocity(delta_time);
+    LOG_TRACE("Camera moved back: dt=", delta_time, ", pos=(", camera_pos_.x, ", ", camera_pos_.y, ", ", camera_pos_.z, ")");
   }
 
   inline void goRight(const float delta_time) {
     camera_pos_ += getCameraRight() * getVelocity(delta_time);
+    LOG_TRACE("Camera moved right: dt=", delta_time, ", pos=(", camera_pos_.x, ", ", camera_pos_.y, ", ", camera_pos_.z, ")");
   }
 
   inline void goLeft(const float delta_time) {
     camera_pos_ -= getCameraRight() * getVelocity(delta_time);
+    LOG_TRACE("Camera moved left: dt=", delta_time, ", pos=(", camera_pos_.x, ", ", camera_pos_.y, ", ", camera_pos_.z, ")");
   }
 
   inline void goUp(const float delta_time) {
     camera_pos_ += camera_up_ * getVelocity(delta_time);
+    LOG_TRACE("Camera moved up: dt=", delta_time, ", pos=(", camera_pos_.x, ", ", camera_pos_.y, ", ", camera_pos_.z, ")");
   }
 
   inline void goDown(const float delta_time) {
     camera_pos_ -= camera_up_ * getVelocity(delta_time);
+    LOG_TRACE("Camera moved down: dt=", delta_time, ", pos=(", camera_pos_.x, ", ", camera_pos_.y, ", ", camera_pos_.z, ")");
   }
 
   inline void rotateYawClockwiseByDegrees(const float degrees) {
@@ -107,6 +115,7 @@ public:
 
     clampPitch();
     updateCameraFront();
+    LOG_TRACE("Camera rotated by mouse: xoffset=", xoffset, ", yoffset=", yoffset, ", yaw=", yaw_, ", pitch=", pitch_);
   }
 
   inline void rotateByMouseOffset(const float xoffset, const float yoffset,
@@ -116,6 +125,7 @@ public:
 
     clampPitch();
     updateCameraFront();
+    LOG_TRACE("Camera rotated by mouse: xoffset=", xoffset, ", yoffset=", yoffset, ", sensitivity=", sensitivity, ", yaw=", yaw_, ", pitch=", pitch_);
   }
 
 private:
@@ -129,6 +139,7 @@ private:
     front.z = std::sin(glm::radians(yaw_)) * std::cos(glm::radians(pitch_));
 
     camera_front_ = glm::normalize(front);
+    LOG_TRACE("Camera front updated: front=(", camera_front_.x, ", ", camera_front_.y, ", ", camera_front_.z, ")");
   }
 };
 

@@ -4,6 +4,7 @@
 #include "Mesh.h"
 
 #include "glm/gtc/type_ptr.hpp"
+#include "Logger.h"
 
 
 Mesh::Mesh(
@@ -11,10 +12,13 @@ Mesh::Mesh(
     const std::vector<idx>& indices,
     Material material): vertices_(vertices), indices_(indices), material_(std::move(material))
 {
+    LOG_INFO("Constructing mesh: vertices=", vertices_.size(), ", indices=", indices_.size());
     setupMesh();
 }
 
 Mesh::~Mesh() {
+    LOG_DEBUG("Destroying mesh: VAO=", VAO_, ", VBO=", VBO_, ", EBO=", EBO_);
+
     if (VAO_ != 0) {
         glDeleteVertexArrays(1, &VAO_);
     }
@@ -35,6 +39,8 @@ Mesh::Mesh(Mesh&& other) noexcept
     VBO_(other.VBO_),
     EBO_(other.EBO_)
 {
+    LOG_DEBUG("Move-constructing mesh: VAO=", VAO_, ", VBO=", VBO_, ", EBO=", EBO_);
+
     other.VAO_ = 0;
     other.VBO_ = 0;
     other.EBO_ = 0;
@@ -74,9 +80,13 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept {
 }
 
 void Mesh::setupMesh() {
+    LOG_DEBUG("Setting up mesh buffers: vertices=", vertices_.size(), ", indices=", indices_.size());
+
     glGenVertexArrays(1, &VAO_);
     glGenBuffers(1, &VBO_);
     glGenBuffers(1, &EBO_);
+
+    LOG_DEBUG("Generated mesh buffers: VAO=", VAO_, ", VBO=", VBO_, ", EBO=", EBO_);
 
     glBindVertexArray(VAO_);
 
@@ -130,9 +140,12 @@ void Mesh::setupMesh() {
     glEnableVertexAttribArray(2);
 
     glBindVertexArray(0);
+    LOG_INFO("Mesh setup completed: VAO=", VAO_);
 }
 
 void Mesh::draw(GLuint shader_program) const {
+    LOG_TRACE("Drawing mesh: VAO=", VAO_, ", indices=", indices_.size(), ", shader_program=", shader_program);
+
     GLint diffuse_location = glGetUniformLocation(shader_program, "material.diffuse_color");
     GLint specular_location = glGetUniformLocation(shader_program, "material.specular_color");
     GLint ambient_location = glGetUniformLocation(shader_program, "material.ambient_color");
