@@ -17,6 +17,7 @@
 #include "defines.h"
 #include "reader.h"
 #include "creator.h"
+#include "texture_creator.h"
 #include "Logger.h"
 
 int main() {
@@ -96,8 +97,22 @@ int main() {
     GLint model_location = glGetUniformLocation(shader_program, "model");
     GLint view_location = glGetUniformLocation(shader_program, "view");
     GLint projection_location = glGetUniformLocation(shader_program, "projection");
+    GLint diffuse_texture_location = glGetUniformLocation(shader_program, "diffuse_texture");
 
-    Model loaded_model = ModelLoader::loadModel(PROJECT_PATH / "data"/"cube.obj");
+    GLuint diffuse_texture = createTextureFromFile(PROJECT_PATH / "data/texture1.png");
+    if (diffuse_texture == 0) {
+        LOG_ERROR("Failed to create diffuse texture for scene_test_001");
+        glDeleteProgram(shader_program);
+        glfwDestroyWindow(window);
+        glfwTerminate();
+        return -1;
+    }
+    LOG_INFO("Diffuse texture ready: id=", diffuse_texture);
+
+    Model loaded_model = ModelLoader::loadModel(
+        PROJECT_PATH / "data/plate/plate.obj",
+        aiProcess_Triangulate | aiProcess_GenSmoothNormals
+    );
     LOG_INFO("Scene model ready: meshes=", loaded_model.meshes_.size());
 
     Camera camera;
@@ -171,13 +186,15 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glUseProgram(shader_program);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, diffuse_texture);
+        glUniform1i(diffuse_texture_location, 0);
 
         glm::mat4 model = glm::mat4(1.0f);
 
-        // спочатку центруємо модель у її локальних координатах,
-        // потім масштабуємо до нормального розміру
-        model = glm::scale(model, glm::vec3(0.15f));
-        model = glm::translate(model, glm::vec3(-53.0f, -53.0f, 0.0f));
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, -4.0f));
+        model = glm::scale(model, glm::vec3(0.03f));
+        model = glm::translate(model, glm::vec3(0.0f, 14.0f, 0.0f));
 
         glUniformMatrix4fv(
             model_location,
@@ -207,6 +224,7 @@ int main() {
     }
 
     glDeleteProgram(shader_program);
+    glDeleteTextures(1, &diffuse_texture);
     LOG_INFO("Deleted shader program: id=", shader_program);
 
     glfwDestroyWindow(window);

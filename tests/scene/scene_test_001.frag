@@ -8,10 +8,14 @@ struct Material {
 };
 
 uniform Material material;
+uniform sampler2D diffuse_texture;
+
+in vec2 TexCoord;
 
 out vec4 FragColor;
 
 void main()
 {
-    FragColor = vec4(material.diffuse_color, 1.0);
+    vec4 texel = texture(diffuse_texture, TexCoord);
+    FragColor = vec4(material.diffuse_color, 1.0) * texel;
 }
