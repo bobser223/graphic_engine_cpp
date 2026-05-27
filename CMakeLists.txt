@@ -76,6 +76,8 @@ add_executable(file_test
         engine/Shader.cpp
         engine/Shader.h
         tests/scene/scene_test_002.cpp
+        engine/Texture.cpp
+        engine/Texture.h
 )
 
 target_link_libraries(file_test ${libs}
