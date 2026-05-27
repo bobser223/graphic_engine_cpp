@@ -80,6 +80,11 @@ Mesh::Mesh(Mesh&& other) noexcept
 
 Mesh& Mesh::operator=(Mesh&& other) noexcept {
     if (this != &other) {
+        LOG_DEBUG(
+            "Move-assigning mesh: current VAO=", VAO_,
+            ", other VAO=", other.VAO_
+        );
+
         return *this;
     }
 
@@ -181,6 +186,19 @@ void Mesh::draw(GLuint shader_program) const {
     GLint specular_location = glGetUniformLocation(shader_program, "material.specular_color");
     GLint ambient_location = glGetUniformLocation(shader_program, "material.ambient_color");
     GLint shininess_location = glGetUniformLocation(shader_program, "material.shininess");
+
+    if (diffuse_location == -1) {
+        LOG_WARN("Uniform not found or optimized out: material.diffuse_color");
+    }
+    if (specular_location == -1) {
+        LOG_WARN("Uniform not found or optimized out: material.specular_color");
+    }
+    if (ambient_location == -1) {
+        LOG_WARN("Uniform not found or optimized out: material.ambient_color");
+    }
+    if (shininess_location == -1) {
+        LOG_WARN("Uniform not found or optimized out: material.shininess");
+    }
 
     glUniform3fv(diffuse_location, 1, glm::value_ptr(material_.diffuse_color));
     glUniform3fv(specular_location, 1, glm::value_ptr(material_.specular_color));

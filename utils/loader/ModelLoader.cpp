@@ -50,6 +50,7 @@ Model ModelLoader::loadModel(const std::string& path, const unsigned int flags) 
 }
 
 Model ModelLoader::loadModel(const std::filesystem::path& path, const unsigned int flags) {
+    LOG_DEBUG("Loading model from filesystem path: ", path);
     return loadModel(path.string(), flags);
 }
 

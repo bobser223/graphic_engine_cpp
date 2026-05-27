@@ -58,6 +58,7 @@ void Camera::goDown(const float delta_time) {
 void Camera::rotateYawClockwiseByDegrees(const float degrees) {
     yaw_ += degrees;
     updateCameraFront();
+    LOG_TRACE("Camera yaw rotated clockwise: degrees=", degrees, ", yaw=", yaw_);
 }
 
 void Camera::rotateYawClockwiseByTime(const float delta_time) {
@@ -67,6 +68,7 @@ void Camera::rotateYawClockwiseByTime(const float delta_time) {
 void Camera::rotateYawCounterClockwiseByDegrees(const float degrees) {
     yaw_ -= degrees;
     updateCameraFront();
+    LOG_TRACE("Camera yaw rotated counter-clockwise: degrees=", degrees, ", yaw=", yaw_);
 }
 
 void Camera::rotateYawCounterClockwiseByTime(const float delta_time) {
@@ -77,6 +79,7 @@ void Camera::rotatePitchUpByDegrees(const float degrees) {
     pitch_ += degrees;
     clampPitch();
     updateCameraFront();
+    LOG_TRACE("Camera pitch rotated up: degrees=", degrees, ", pitch=", pitch_);
 }
 
 void Camera::rotatePitchUpByTime(const float delta_time) {
@@ -87,6 +90,7 @@ void Camera::rotatePitchDownByDegrees(const float degrees) {
     pitch_ -= degrees;
     clampPitch();
     updateCameraFront();
+    LOG_TRACE("Camera pitch rotated down: degrees=", degrees, ", pitch=", pitch_);
 }
 
 void Camera::rotatePitchDownByTime(const float delta_time) {
@@ -112,7 +116,11 @@ void Camera::rotateByMouseOffset(const float xoffset, const float yoffset, const
 }
 
 void Camera::clampPitch() {
+    const float previous_pitch = pitch_;
     pitch_ = std::clamp(pitch_, -89.0f, 89.0f);
+    if (pitch_ != previous_pitch) {
+        LOG_DEBUG("Camera pitch clamped: from=", previous_pitch, ", to=", pitch_);
+    }
 }
 
 void Camera::updateCameraFront() {

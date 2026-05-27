@@ -13,6 +13,8 @@
 #include "glm/gtc/type_ptr.hpp"
 
 Shader::Shader(const std::string& vertex_path, const std::string& fragment_path) {
+    LOG_INFO("Creating shader program: vertex=", vertex_path, ", fragment=", fragment_path);
+
     const GLuint vertex_shader = createShaderFromFile(GL_VERTEX_SHADER, vertex_path);
     const GLuint fragment_shader = createShaderFromFile(GL_FRAGMENT_SHADER, fragment_path);
 
@@ -20,31 +22,38 @@ Shader::Shader(const std::string& vertex_path, const std::string& fragment_path)
 
     glDeleteShader(vertex_shader);
     glDeleteShader(fragment_shader);
+
+    LOG_INFO("Shader program created: id=", program_id_);
 }
 
 Shader::~Shader() {
     if (program_id_ != 0) {
+        LOG_DEBUG("Deleting shader program: id=", program_id_);
         glDeleteProgram(program_id_);
     }
 }
 
 Shader::Shader(Shader&& other) noexcept
     : program_id_(std::exchange(other.program_id_, 0)) {
+    LOG_DEBUG("Move-constructing shader: id=", program_id_);
 }
 
 Shader& Shader::operator=(Shader&& other) noexcept {
     if (this != &other) {
         if (program_id_ != 0) {
+            LOG_DEBUG("Deleting shader program before move assignment: id=", program_id_);
             glDeleteProgram(program_id_);
         }
 
         program_id_ = std::exchange(other.program_id_, 0);
+        LOG_DEBUG("Move-assigning shader: id=", program_id_);
     }
 
     return *this;
 }
 
 void Shader::use() const {
+    LOG_TRACE("Using shader program: id=", program_id_);
     glUseProgram(program_id_);
 }
 
@@ -53,38 +62,47 @@ GLuint Shader::getProgramId() const {
 }
 
 void Shader::setUniform(const std::string& name, const glm::mat4& value) const {
+    LOG_TRACE("Setting mat4 uniform: ", name);
     glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
 void Shader::setUniform(const std::string& name, const glm::mat3& value) const {
+    LOG_TRACE("Setting mat3 uniform: ", name);
     glUniformMatrix3fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
 void Shader::setUniform(const std::string& name, const glm::mat2& value) const {
+    LOG_TRACE("Setting mat2 uniform: ", name);
     glUniformMatrix2fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value));
 }
 
 void Shader::setUniform(const std::string& name, const glm::vec2& value) const {
+    LOG_TRACE("Setting vec2 uniform: ", name, " value=(", value.x, ", ", value.y, ")");
     glUniform2fv(getUniformLocation(name), 1, glm::value_ptr(value));
 }
 
 void Shader::setUniform(const std::string& name, const glm::vec3& value) const {
+    LOG_TRACE("Setting vec3 uniform: ", name, " value=(", value.x, ", ", value.y, ", ", value.z, ")");
     glUniform3fv(getUniformLocation(name), 1, glm::value_ptr(value));
 }
 
 void Shader::setUniform(const std::string& name, const glm::vec4& value) const {
+    LOG_TRACE("Setting vec4 uniform: ", name, " value=(", value.x, ", ", value.y, ", ", value.z, ", ", value.w, ")");
     glUniform4fv(getUniformLocation(name), 1, glm::value_ptr(value));
 }
 
 void Shader::setUniform(const std::string& name, const float value) const {
+    LOG_TRACE("Setting float uniform: ", name, " value=", value);
     glUniform1f(getUniformLocation(name), value);
 }
 
 void Shader::setUniform(const std::string& name, const int value) const {
+    LOG_TRACE("Setting int uniform: ", name, " value=", value);
     glUniform1i(getUniformLocation(name), value);
 }
 
 void Shader::setUniform(const std::string& name, const bool value) const {
+    LOG_TRACE("Setting bool uniform: ", name, " value=", value);
     glUniform1i(getUniformLocation(name), value);
 }
 

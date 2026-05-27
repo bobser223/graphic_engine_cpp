@@ -12,15 +12,21 @@
 
 Texture::Texture(std::string path, const TextureType type, const bool flip_vertically)
     : type_(type), path_(std::move(path)) {
+    LOG_INFO("Creating Texture object: path=", path_, ", type=", static_cast<int>(type_), ", flip_vertically=", flip_vertically);
+
     id_ = createTextureFromFile(path_, flip_vertically);
 
     if (id_ == 0) {
+        LOG_ERROR("Texture object creation failed: path=", path_);
         throw std::runtime_error("Failed to create texture: " + path_);
     }
+
+    LOG_INFO("Texture object created: id=", id_, ", path=", path_);
 }
 
 Texture::~Texture() {
     if (id_ != 0) {
+        LOG_DEBUG("Deleting texture: id=", id_, ", path=", path_);
         glDeleteTextures(1, &id_);
     }
 }
@@ -30,6 +36,8 @@ Texture::Texture(Texture&& other) noexcept
       target_(other.target_),
       type_(other.type_),
       path_(std::move(other.path_)) {
+    LOG_DEBUG("Move-constructing texture: id=", id_, ", path=", path_);
+
     other.id_ = 0;
     other.target_ = GL_TEXTURE_2D;
     other.type_ = TextureType::Unknown;
@@ -38,6 +46,7 @@ Texture::Texture(Texture&& other) noexcept
 Texture& Texture::operator=(Texture&& other) noexcept {
     if (this != &other) {
         if (id_ != 0) {
+            LOG_DEBUG("Deleting texture before move assignment: id=", id_, ", path=", path_);
             glDeleteTextures(1, &id_);
         }
 
@@ -49,17 +58,21 @@ Texture& Texture::operator=(Texture&& other) noexcept {
         other.id_ = 0;
         other.target_ = GL_TEXTURE_2D;
         other.type_ = TextureType::Unknown;
+
+        LOG_DEBUG("Move-assigning texture: id=", id_, ", path=", path_);
     }
 
     return *this;
 }
 
 void Texture::bind(const GLuint unit) const {
+    LOG_TRACE("Binding texture: id=", id_, ", target=", target_, ", unit=", unit);
     glActiveTexture(GL_TEXTURE0 + unit);
     glBindTexture(target_, id_);
 }
 
 void Texture::unbind() const {
+    LOG_TRACE("Unbinding texture target: ", target_);
     glBindTexture(target_, 0);
 }
 
