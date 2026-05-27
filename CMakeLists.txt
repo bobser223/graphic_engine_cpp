@@ -37,6 +37,8 @@ add_executable(main
         engine/Model.h
         engine/Mesh.h
         engine/Mesh.cpp
+        engine/Material.cpp
+        engine/Material.h
         new_tech_test/fileReaderTest.cpp
         new_tech_test/fileReaderTest.h
         utils/points_utils/points_expander.cpp
@@ -95,6 +97,8 @@ add_executable(loader_test_002
         engine/Model.h
         engine/Mesh.h
         engine/Mesh.cpp
+        engine/Material.cpp
+        engine/Material.h
         new_tech_test/fileReaderTest.cpp
         new_tech_test/fileReaderTest.h
         utils/points_utils/points_expander.cpp
@@ -119,6 +123,10 @@ add_executable(scene_test_001
         engine/Model.h
         engine/Mesh.h
         engine/Mesh.cpp
+        engine/Material.cpp
+        engine/Material.h
+        engine/Camera.cpp
+        engine/Camera.h
         new_tech_test/fileReaderTest.cpp
         new_tech_test/fileReaderTest.h
         utils/points_utils/points_expander.cpp
@@ -143,10 +151,14 @@ add_executable(scene_test_002
         engine/Model.h
         engine/Mesh.h
         engine/Mesh.cpp
+        engine/Material.cpp
+        engine/Material.h
         engine/Camera.cpp
         engine/Camera.h
         engine/Shader.cpp
         engine/Shader.h
+        engine/Texture.cpp
+        engine/Texture.h
         new_tech_test/fileReaderTest.cpp
         new_tech_test/fileReaderTest.h
         utils/points_utils/points_expander.cpp
@@ -159,7 +171,6 @@ add_executable(scene_test_002
 target_link_libraries(scene_test_002 ${libs}
         assimp::assimp
 )
-
 
 
 

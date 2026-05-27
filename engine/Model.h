@@ -7,14 +7,9 @@
 #include <string>
 #include <vector>
 
-
 #include "defines.h"
-#include "Logger.h"
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
 #include <iostream>
-#include <vector>
 
 #include "Mesh.h"
 
@@ -34,25 +29,9 @@ public:
   std::vector<Mesh> meshes_;
   std::string directory_;
 
-  void draw(GLuint shader_program) const {
-    LOG_TRACE("Drawing model from directory=", directory_, ", meshes=", meshes_.size());
-    for (const Mesh& mesh : meshes_) {
-      mesh.draw(shader_program);
-    }
-  }
+  void draw(GLuint shader_program) const;
 
-
-  friend std::ostream& operator<<(std::ostream& os, const Model& model) {
-    os << "Model{directory=\"" << model.directory_ << "\", meshes=[";
-    for (std::size_t i = 0; i < model.meshes_.size(); ++i) {
-      if (i != 0) {
-        os << ", ";
-      }
-      os << model.meshes_[i];
-    }
-    os << "]}";
-    return os;
-  }
+  friend std::ostream& operator<<(std::ostream& os, const Model& model);
 };
 
 #endif // ENGINE_MODEL_H

@@ -16,16 +16,7 @@ struct Vertex {
   glm::vec3 normal_;
   glm::vec2 tex_coord_;
 
-  friend std::ostream& operator<<(std::ostream& os, const Vertex& vertex) {
-    os << "Vertex{position=("
-       << vertex.position_.x << ", " << vertex.position_.y << ", " << vertex.position_.z
-       << "), normal=("
-       << vertex.normal_.x << ", " << vertex.normal_.y << ", " << vertex.normal_.z
-       << "), tex_coord=("
-       << vertex.tex_coord_.x << ", " << vertex.tex_coord_.y
-       << ")}";
-    return os;
-  }
+  friend std::ostream& operator<<(std::ostream& os, const Vertex& vertex);
 };
 
 
@@ -52,26 +43,7 @@ public:
 
   void draw(GLuint shader_program) const;
 
-  friend std::ostream& operator<<(std::ostream& os, const Mesh& mesh) {
-    os << "Mesh{vertices=[";
-    for (std::size_t i = 0; i < mesh.vertices_.size(); ++i) {
-      if (i != 0) {
-        os << ", ";
-      }
-      os << mesh.vertices_[i];
-    }
-
-    os << "], indices=[";
-    for (std::size_t i = 0; i < mesh.indices_.size(); ++i) {
-      if (i != 0) {
-        os << ", ";
-      }
-      os << mesh.indices_[i];
-    }
-
-    os << "], material=" << mesh.material_ << "}";
-    return os;
-  }
+  friend std::ostream& operator<<(std::ostream& os, const Mesh& mesh);
 
 private:
   uint VAO_=0;
