@@ -20,12 +20,16 @@
 #include "../../engine/Camera.h"
 #include "../../engine/Shader.h"
 #include "../../engine/Texture.h"
+// #include "../../engine/Node.h"
+// #include "../../engine/Node.cpp"
 
 #include "defines.h"
 #include "reader.h"
 #include "creator.h"
 #include "texture_creator.h"
 #include "Logger.h"
+
+class Node;
 
 int main() {
     LOG_INFO("Starting scene_test_001");
@@ -101,6 +105,12 @@ int main() {
             PROJECT_PATH / "data/plate/plate.obj",
             aiProcess_Triangulate | aiProcess_GenSmoothNormals
         );
+
+        // Node root;
+        // Node& model_node = root.createChild(&loaded_model);
+        //
+        // model_node.transform_.position_ = glm::vec3(0.0f, 14.0f, -4.0f);
+        // model_node.transform_.scale_ = glm::vec3(0.03f);
 
         LOG_INFO("Scene model ready: meshes=", loaded_model.meshes_.size());
 

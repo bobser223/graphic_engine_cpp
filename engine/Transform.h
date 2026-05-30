@@ -4,7 +4,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
-#include <glm/gtx/quaternion.hpp>
+
+// #include <glm/gtx/quaternion.hpp>
 
 class Transform {
 public:
@@ -23,7 +24,9 @@ public:
         auto result = glm::mat4(1.0f);
 
         result = glm::translate(result, position_);
-        result *= glm::toMat4(rotation_);
+
+        result *= quaternionToMat4(rotation_);
+
         result = glm::scale(result, scale_);
 
         return result;
@@ -74,10 +77,89 @@ public:
         return rotation_;
     }
 
-public:
+    void setRotationFromTo(glm::vec3 from, glm::vec3 to) {
+        from = glm::normalize(from);
+        to = glm::normalize(to);
+
+        float cos_theta = glm::dot(from, to);
+
+        if (cos_theta > 0.9999f) {
+            rotation_ = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+            return;
+        }
+
+        if (cos_theta < -0.9999f) {
+            glm::vec3 axis = glm::cross(glm::vec3(1.0f, 0.0f, 0.0f), from);
+
+            if (glm::length(axis) < 0.0001f) {
+                axis = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), from);
+            }
+
+            axis = glm::normalize(axis);
+            rotation_ = glm::angleAxis(glm::radians(180.0f), axis);
+            return;
+        }
+
+        glm::vec3 axis = glm::normalize(glm::cross(from, to));
+        float angle = std::acos(cos_theta);
+
+        rotation_ = glm::angleAxis(angle, axis);
+    }
+
     glm::vec3 position_ = glm::vec3(0.0f);
     glm::quat rotation_ = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
     glm::vec3 scale_ = glm::vec3(1.0f);
+
+    [[nodiscard]] static glm::mat4 quaternionToMat4(glm::quat q) {
+        q = glm::normalize(q);
+
+        const float w = q.w;
+        const float x = q.x;
+        const float y = q.y;
+        const float z = q.z;
+
+        const float x2 = x + x;
+        const float y2 = y + y;
+        const float z2 = z + z;
+
+        const float xx = x * x2;
+        const float yy = y * y2;
+        const float zz = z * z2;
+
+        const float xy = x * y2;
+        const float xz = x * z2;
+        const float yz = y * z2;
+
+        const float wx = w * x2;
+        const float wy = w * y2;
+        const float wz = w * z2;
+
+        glm::mat4 m(1.0f);
+
+        m[0][0] = 1.0f - yy - zz;
+        m[0][1] = xy + wz;
+        m[0][2] = xz - wy;
+        m[0][3] = 0.0f;
+
+        m[1][0] = xy - wz;
+        m[1][1] = 1.0f - xx - zz;
+        m[1][2] = yz + wx;
+        m[1][3] = 0.0f;
+
+        m[2][0] = xz + wy;
+        m[2][1] = yz - wx;
+        m[2][2] = 1.0f - xx - yy;
+        m[2][3] = 0.0f;
+
+        m[3][0] = 0.0f;
+        m[3][1] = 0.0f;
+        m[3][2] = 0.0f;
+        m[3][3] = 1.0f;
+
+        return m;
+    }
+
+
 };
 
 #endif // ENGINE_TRANSFORM_H

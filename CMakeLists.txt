@@ -80,6 +80,10 @@ add_executable(file_test
         tests/scene/scene_test_002.cpp
         engine/Texture.cpp
         engine/Texture.h
+        engine/Transform.cpp
+        engine/Transform.h
+        engine/Node.cpp
+        engine/Node.h
 )
 
 target_link_libraries(file_test ${libs}
@@ -159,12 +163,15 @@ add_executable(scene_test_002
         engine/Shader.h
         engine/Texture.cpp
         engine/Texture.h
+        engine/Node.h
+        engine/Node.cpp
         new_tech_test/fileReaderTest.cpp
         new_tech_test/fileReaderTest.h
         utils/points_utils/points_expander.cpp
         utils/points_utils/points_expander.h
         utils/logger/Logger.cpp
         utils/logger/Logger.h
+
 
 )
 
