@@ -20,8 +20,8 @@
 #include "../../engine/Camera.h"
 #include "../../engine/Shader.h"
 #include "../../engine/Texture.h"
-// #include "../../engine/Node.h"
-// #include "../../engine/Node.cpp"
+#include "../../engine/Node.h"
+#include "../../engine/Node.cpp"
 
 #include "defines.h"
 #include "reader.h"
@@ -29,7 +29,6 @@
 #include "texture_creator.h"
 #include "Logger.h"
 
-class Node;
 
 int main() {
     LOG_INFO("Starting scene_test_001");
@@ -106,11 +105,11 @@ int main() {
             aiProcess_Triangulate | aiProcess_GenSmoothNormals
         );
 
-        // Node root;
-        // Node& model_node = root.createChild(&loaded_model);
-        //
-        // model_node.transform_.position_ = glm::vec3(0.0f, 14.0f, -4.0f);
-        // model_node.transform_.scale_ = glm::vec3(0.03f);
+        Node root;
+        Node& model_node = root.createChild(&loaded_model);
+
+        model_node.transform_.position_ = glm::vec3(0.0f, 0.42f, -4.0f);
+        model_node.transform_.scale_ = glm::vec3(0.03f);
 
         LOG_INFO("Scene model ready: meshes=", loaded_model.meshes_.size());
 
@@ -161,9 +160,6 @@ int main() {
                 camera.rotateYawCounterClockwiseByDegrees(delta_time*rotation_speed);
             }
 
-            glm::mat4 view = camera.getViewMatrix();
-
-
             if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
                 glfwSetWindowShouldClose(window, true);
             }
@@ -175,17 +171,12 @@ int main() {
 
             texture.bind(0);
 
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, glm::vec3(0.0f, 0.0f, -4.0f));
-            model = glm::scale(model, glm::vec3(0.03f));
-            model = glm::translate(model, glm::vec3(0.0f, 14.0f, 0.0f));
 
             shader.setUniform("diffuse_texture", 0);
-            shader.setUniform("model", model);
             shader.setUniform("view", camera.getViewMatrix());
             shader.setUniform("projection", projection);
 
-            loaded_model.draw(shader.getProgramId());
+            root.draw(shader);
 
             glfwSwapBuffers(window);
             glfwPollEvents();
