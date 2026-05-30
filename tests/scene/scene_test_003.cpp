@@ -87,7 +87,8 @@ int main() {
 
 
 
-    float rotation_speed = 90.0f;
+    constexpr float rotation_speed = 90.0f;
+    constexpr float transition_speed = 1.5f;
     float last_frame_time = 0.0f;
 
 
@@ -118,6 +119,9 @@ int main() {
             auto current_frame_time = static_cast<float>(glfwGetTime());
             float delta_time = current_frame_time - last_frame_time;
             last_frame_time = current_frame_time;
+
+
+            // ====================== CAMERA ========================
 
             if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
                 camera.goToward(delta_time);
@@ -163,6 +167,23 @@ int main() {
                 glfwSetWindowShouldClose(window, true);
             }
 
+            // ====================== ROOT ========================
+
+            if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) {
+                root.transform_.moveDown(delta_time*transition_speed);
+            }
+
+            if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
+                root.transform_.moveUp(delta_time*transition_speed);
+            }
+
+            if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
+                root.transform_.moveLeft(delta_time*transition_speed);
+            }
+
+            if (glfwGetKey(window, GLFW_KEY_SEMICOLON) == GLFW_PRESS) {
+                root.transform_.moveRight(delta_time*transition_speed);
+            }
 
 
 

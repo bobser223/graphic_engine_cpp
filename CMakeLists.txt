@@ -18,6 +18,44 @@ find_package(OpenGL REQUIRED)
 
 find_package(assimp REQUIRED)
 
+
+add_library(engine_core
+        utils/shader_utils/creator.cpp
+        utils/shader_utils/reader.cpp
+        utils/texture_utils/texture_creator.cpp
+        utils/loader/ModelLoader.cpp
+        utils/points_utils/points_expander.cpp
+        utils/logger/Logger.cpp
+
+        engine/Model.cpp
+        engine/Mesh.cpp
+        engine/Material.cpp
+        engine/Camera.cpp
+        engine/Shader.cpp
+        engine/Texture.cpp
+        engine/Transform.cpp
+        engine/Node.cpp
+)
+
+target_include_directories(engine_core PUBLIC
+        utils
+        utils/loader
+        utils/points_utils
+        utils/shader_utils
+        utils/texture_utils
+        utils/logger
+        engine
+)
+
+target_link_libraries(engine_core PUBLIC
+        ${OPENGL_LIBRARY}
+        glfw
+        glad
+        glm
+        stb
+        assimp::assimp
+)
+
 set(libs
         ${OPENGL_LIBRARY}
         glfw
@@ -84,6 +122,7 @@ add_executable(file_test
         engine/Transform.h
         engine/Node.cpp
         engine/Node.h
+        tests/scene/scene_test_003.cpp
 )
 
 target_link_libraries(file_test ${libs}
@@ -146,38 +185,18 @@ target_link_libraries(scene_test_001 ${libs}
 
 add_executable(scene_test_002
         tests/scene/scene_test_002.cpp
-        utils/shader_utils/creator.cpp
-        utils/shader_utils/reader.cpp
-        utils/texture_utils/texture_creator.cpp
-        utils/loader/ModelLoader.cpp
-        utils/loader/ModelLoader.h
-        engine/Model.cpp
-        engine/Model.h
-        engine/Mesh.h
-        engine/Mesh.cpp
-        engine/Material.cpp
-        engine/Material.h
-        engine/Camera.cpp
-        engine/Camera.h
-        engine/Shader.cpp
-        engine/Shader.h
-        engine/Texture.cpp
-        engine/Texture.h
-        engine/Node.h
-        engine/Node.cpp
-        new_tech_test/fileReaderTest.cpp
-        new_tech_test/fileReaderTest.h
-        utils/points_utils/points_expander.cpp
-        utils/points_utils/points_expander.h
-        utils/logger/Logger.cpp
-        utils/logger/Logger.h
-
 
 )
 
-target_link_libraries(scene_test_002 ${libs}
-        assimp::assimp
+target_link_libraries(scene_test_002
+        PRIVATE engine_core
 )
 
+add_executable(scene_test_003
+        tests/scene/scene_test_003.cpp
+)
+
+target_link_libraries(scene_test_003 PRIVATE engine_core
+)
 
 

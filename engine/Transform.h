@@ -106,6 +106,70 @@ public:
         rotation_ = glm::angleAxis(angle, axis);
     }
 
+    void translate(const glm::vec3& delta) {
+        position_ += delta;
+    }
+
+    void translateLocal(const glm::vec3& local_delta) {
+        position_ += getRight()   * local_delta.x;
+        position_ += getUp()      * local_delta.y;
+        position_ += getForward() * local_delta.z;
+    }
+
+    [[nodiscard]] glm::vec3 getForward() const {
+        return glm::normalize(rotation_ * glm::vec3(0.0f, 0.0f, -1.0f));
+    }
+
+    [[nodiscard]] glm::vec3 getRight() const {
+        return glm::normalize(rotation_ * glm::vec3(1.0f, 0.0f, 0.0f));
+    }
+
+    [[nodiscard]] glm::vec3 getUp() const {
+        return glm::normalize(rotation_ * glm::vec3(0.0f, 1.0f, 0.0f));
+    }
+
+    void moveForward(float distance) {
+        position_ += getForward() * distance;
+    }
+
+    void moveBack(float distance) {
+        position_ -= getForward() * distance;
+    }
+
+    void moveRight(float distance) {
+        position_ += getRight() * distance;
+    }
+
+    void moveLeft(float distance) {
+        position_ -= getRight() * distance;
+    }
+
+    void moveUp(float distance) {
+        position_ += getUp() * distance;
+    }
+
+    void moveDown(float distance) {
+        position_ -= getUp() * distance;
+    }
+
+    void rotateWorldAxisAngleDegrees(float degrees, const glm::vec3& axis) {
+        const glm::quat delta = glm::angleAxis(
+            glm::radians(degrees),
+            glm::normalize(axis)
+        );
+
+        rotation_ = glm::normalize(delta * rotation_);
+    }
+
+    void rotateLocalAxisAngleDegrees(float degrees, const glm::vec3& axis) {
+        const glm::quat delta = glm::angleAxis(
+            glm::radians(degrees),
+            glm::normalize(axis)
+        );
+
+        rotation_ = glm::normalize(rotation_ * delta);
+    }
+
     glm::vec3 position_ = glm::vec3(0.0f);
     glm::quat rotation_ = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
     glm::vec3 scale_ = glm::vec3(1.0f);
