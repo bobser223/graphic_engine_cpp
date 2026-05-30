@@ -21,7 +21,6 @@
 #include "../../engine/Shader.h"
 #include "../../engine/Texture.h"
 #include "../../engine/Node.h"
-#include "../../engine/Node.cpp"
 
 #include "defines.h"
 #include "reader.h"
@@ -31,7 +30,7 @@
 
 
 int main() {
-    LOG_INFO("Starting scene_test_001");
+    LOG_INFO("Starting scene_test_003");
 
     if (!glfwInit()) {
         LOG_ERROR("Failed to initialize GLFW");
@@ -47,9 +46,12 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
+    constexpr int window_width = 640;
+    constexpr int window_height = 480;
+
     GLFWwindow* window = glfwCreateWindow(
-        640,
-        480,
+        window_width,
+        window_height,
         "Model Loader Test",
         nullptr,
         nullptr
@@ -60,7 +62,7 @@ int main() {
         glfwTerminate();
         return -1;
     }
-    LOG_INFO("GLFW window created: 640x480");
+    LOG_INFO("GLFW window created: ", window_width, "x", window_height);
 
     glfwMakeContextCurrent(window);
 
@@ -80,7 +82,7 @@ int main() {
 
     glm::mat4 projection = glm::perspective(
         glm::radians(45.0f),
-        640.0f / 480.0f,
+        static_cast<float>(window_width) / static_cast<float>(window_height),
         0.1f,
         100.0f
     );
@@ -116,8 +118,8 @@ int main() {
 
 
         while (!glfwWindowShouldClose(window)) {
-            auto current_frame_time = static_cast<float>(glfwGetTime());
-            float delta_time = current_frame_time - last_frame_time;
+            const auto current_frame_time = static_cast<float>(glfwGetTime());
+            const float delta_time = current_frame_time - last_frame_time;
             last_frame_time = current_frame_time;
 
 
@@ -209,6 +211,6 @@ int main() {
     glfwDestroyWindow(window);
     glfwTerminate();
 
-    LOG_INFO("scene_test_001 completed");
+    LOG_INFO("scene_test_003 completed");
     return 0;
 }

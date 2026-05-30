@@ -7,10 +7,12 @@
 #include <memory>
 #include <vector>
 
-#include "Model.h"
-#include "Shader.h"
+#include <glm/mat4x4.hpp>
+
 #include "Transform.h"
 
+class Model;
+class Shader;
 
 class Node {
 public:
@@ -22,66 +24,22 @@ public:
 
     Node() = default;
 
-    explicit Node(Model* model)
-        : model_(model) {}
+    explicit Node(Model* model);
 
     Node(const Node&) = delete;
     Node& operator=(const Node&) = delete;
 
     Node(Node&&) noexcept = delete;
     Node& operator=(Node&&) noexcept = delete;
-    
-    Node& addChild(std::unique_ptr<Node> child) {
-        child->parent_ = this;
-        children_.push_back(std::move(child));
-        return *children_.back();
-    }
 
-    Node& createChild() {
-        auto child = std::make_unique<Node>();
-        child->parent_ = this;
+    Node& addChild(std::unique_ptr<Node> child);
+    Node& createChild();
+    Node& createChild(Model* model);
 
-        children_.push_back(std::move(child));
-        return *children_.back();
-    }
+    [[nodiscard]] glm::mat4 getLocalMatrix() const;
+    [[nodiscard]] glm::mat4 getWorldMatrix() const;
 
-    Node& createChild(Model* model) {
-        assert(model != nullptr);
-        
-        auto child = std::make_unique<Node>(model);
-        child->parent_ = this;
-
-        children_.push_back(std::move(child));
-        return *children_.back();
-    }
-
-    [[nodiscard]] glm::mat4 getLocalMatrix() const {
-        return transform_.getMatrix();
-    }
-
-    [[nodiscard]] glm::mat4 getWorldMatrix() const {
-        const Node* parent = parent_;
-        glm::mat4 result = getLocalMatrix();
-        while ( parent != nullptr) {
-            result = parent->getLocalMatrix() * result;
-            parent = parent->parent_;
-        }
-
-        return result;
-    }
-
-    void draw(const Shader& shader, const glm::mat4& parent_matrix = glm::mat4(1.0f)) const {
-        const glm::mat4 world_matrix = parent_matrix * getLocalMatrix();
-
-        if (model_ != nullptr) {
-            shader.setUniform("model", world_matrix);
-            model_->draw(shader.getProgramId());
-        }
-
-        for (const auto& child : children_) {
-            child->draw(shader, world_matrix);
-        }
-    }
+    void draw(const Shader& shader, const glm::mat4& parent_matrix = glm::mat4(1.0f)) const;
 };
 
 #endif //ENGINE_NODE_H

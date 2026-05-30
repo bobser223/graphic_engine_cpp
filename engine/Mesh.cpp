@@ -79,14 +79,14 @@ Mesh::Mesh(Mesh&& other) noexcept
 
 
 Mesh& Mesh::operator=(Mesh&& other) noexcept {
-    if (this != &other) {
-        LOG_DEBUG(
-            "Move-assigning mesh: current VAO=", VAO_,
-            ", other VAO=", other.VAO_
-        );
-
+    if (this == &other) {
         return *this;
     }
+
+    LOG_DEBUG(
+        "Move-assigning mesh: current VAO=", VAO_,
+        ", other VAO=", other.VAO_
+    );
 
     if (EBO_ != 0) {
         glDeleteBuffers(1, &EBO_);
@@ -118,6 +118,13 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept {
 void Mesh::setupMesh() {
     LOG_DEBUG("Setting up mesh buffers: vertices=", vertices_.size(), ", indices=", indices_.size());
 
+    constexpr GLuint position_location = 0;
+    constexpr GLuint normal_location = 1;
+    constexpr GLuint tex_coord_location = 2;
+    constexpr GLint position_components = 3;
+    constexpr GLint normal_components = 3;
+    constexpr GLint tex_coord_components = 2;
+
     glGenVertexArrays(1, &VAO_);
     glGenBuffers(1, &VBO_);
     glGenBuffers(1, &EBO_);
@@ -144,36 +151,36 @@ void Mesh::setupMesh() {
 
     // layout(location = 0) vec3 position
     glVertexAttribPointer(
-        0,
-        3,
+        position_location,
+        position_components,
         GL_FLOAT,
         GL_FALSE,
         sizeof(Vertex),
         reinterpret_cast<void*>(offsetof(Vertex, position_))
     );
-    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(position_location);
 
     // layout(location = 1) vec3 normal
     glVertexAttribPointer(
-        1,
-        3,
+        normal_location,
+        normal_components,
         GL_FLOAT,
         GL_FALSE,
         sizeof(Vertex),
         reinterpret_cast<void*>(offsetof(Vertex, normal_))
     );
-    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(normal_location);
 
     // layout(location = 2) vec2 texCoord
     glVertexAttribPointer(
-        2,
-        2,
+        tex_coord_location,
+        tex_coord_components,
         GL_FLOAT,
         GL_FALSE,
         sizeof(Vertex),
         reinterpret_cast<void*>(offsetof(Vertex, tex_coord_))
     );
-    glEnableVertexAttribArray(2);
+    glEnableVertexAttribArray(tex_coord_location);
 
     glBindVertexArray(0);
     LOG_INFO("Mesh setup completed: VAO=", VAO_);
@@ -182,10 +189,10 @@ void Mesh::setupMesh() {
 void Mesh::draw(GLuint shader_program) const {
     LOG_TRACE("Drawing mesh: VAO=", VAO_, ", indices=", indices_.size(), ", shader_program=", shader_program);
 
-    GLint diffuse_location = glGetUniformLocation(shader_program, "material.diffuse_color");
-    GLint specular_location = glGetUniformLocation(shader_program, "material.specular_color");
-    GLint ambient_location = glGetUniformLocation(shader_program, "material.ambient_color");
-    GLint shininess_location = glGetUniformLocation(shader_program, "material.shininess");
+    const GLint diffuse_location = glGetUniformLocation(shader_program, "material.diffuse_color");
+    const GLint specular_location = glGetUniformLocation(shader_program, "material.specular_color");
+    const GLint ambient_location = glGetUniformLocation(shader_program, "material.ambient_color");
+    const GLint shininess_location = glGetUniformLocation(shader_program, "material.shininess");
 
     if (diffuse_location == -1) {
         LOG_WARN("Uniform not found or optimized out: material.diffuse_color");
