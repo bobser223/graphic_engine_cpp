@@ -32,16 +32,31 @@ Model ModelLoader::loadModel(const std::string& path, const unsigned int flags) 
         aiMesh* ai_mesh = scene->mMeshes[i];
         LOG_DEBUG("Processing mesh #", i, ": vertices=", ai_mesh->mNumVertices, ", faces=", ai_mesh->mNumFaces);
 
-        auto vertices = extractVerticesFromAiMesh(ai_mesh);
+        auto vertices= extractVerticesFromAiMesh(ai_mesh);
         auto indices = extractIndicesFromAiMesh(ai_mesh);
 
         aiMaterial* ai_material = scene->mMaterials[ai_mesh->mMaterialIndex];
         auto material = extractMaterialFromAiMaterial(ai_material);
 
+        std::shared_ptr<Texture> diffuse_texture = nullptr;
+
+        if (!material.diffuse_texture_path.empty()) {
+            const std::filesystem::path model_path(path);
+            const std::filesystem::path model_dir = model_path.parent_path();
+            const std::filesystem::path texture_path = model_dir / material.diffuse_texture_path;
+
+            diffuse_texture = std::make_shared<Texture>(
+                texture_path.string(),
+                TextureType::Diffuse
+            );
+        }
+
         model.meshes_.emplace_back(
             std::move(vertices),
             std::move(indices),
-            std::move(material)
+            std::move(material),
+            ai_mesh->HasTextureCoords(0),
+            diffuse_texture
         );
     }
 
@@ -97,8 +112,7 @@ std::vector<Vertex> ModelLoader::extractVerticesFromAiMesh(const aiMesh* ai_mesh
     }
 
     if (!ai_mesh->HasTextureCoords(0)) {
-        LOG_ERROR("Invalid input: mesh has no texture coordinates");
-        throw std::runtime_error("Invalid input: mesh has no texture coordinates");
+        LOG_WARN("Mesh has no texture coordinates");
     }
 
     constexpr uint texture_coords_chanel = 0;

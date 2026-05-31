@@ -1,13 +1,15 @@
 
 #pragma once
 #include <ostream>
+#include <memory>
+#include <vector>
 
 #include "glm/vec2.hpp"
 #include "glm/vec3.hpp"
 
-
 #include "defines.h"
 #include "Material.h"
+#include "Texture.h"
 #include "glad/glad.h"
 
 
@@ -29,6 +31,21 @@ public:
     const std::vector<idx>& indices,
     Material material);
 
+  Mesh(
+    const std::vector<Vertex>& vertices,
+    const std::vector<idx>& indices,
+    Material material,
+    bool has_tex_coords
+  );
+
+  Mesh(
+        const std::vector<Vertex>& vertices,
+        const std::vector<idx>& indices,
+        Material material,
+        bool has_tex_coords,
+        std::shared_ptr<Texture> diffuse_texture
+    );
+
   ~Mesh();
 
   std::vector<Vertex> vertices_;
@@ -45,7 +62,27 @@ public:
 
   friend std::ostream& operator<<(std::ostream& os, const Mesh& mesh);
 
+  [[nodiscard]] bool isTextureEnabled() const;
+
+  void enableTexture() {
+    use_texture_ = true;
+  };
+
+  void disableTexture() {
+    use_texture_ = false;
+  };
+
+  void setDiffuseTexture(std::shared_ptr<Texture> texture) {
+    diffuse_texture_ = std::move(texture);
+  }
+
+  bool use_texture_ = true;
+  bool has_tex_coords_ = false;
+
+  std::shared_ptr<Texture> diffuse_texture_ = nullptr;
+
 private:
+
   uint VAO_=0;
   uint VBO_=0;
   uint EBO_=0;

@@ -47,6 +47,33 @@ Mesh::Mesh(
     setupMesh();
 }
 
+Mesh::Mesh(
+    const std::vector<Vertex>& vertices,
+    const std::vector<idx>& indices,
+    Material material, const bool has_tex_coords
+    ): vertices_(vertices), indices_(indices), material_(std::move(material)), has_tex_coords_(has_tex_coords)
+{
+    LOG_INFO("Constructing mesh: vertices=", vertices_.size(), ", indices=", indices_.size());
+    setupMesh();
+}
+
+Mesh::Mesh(
+    const std::vector<Vertex>& vertices,
+    const std::vector<idx>& indices,
+    Material material,
+    const bool has_tex_coords,
+    std::shared_ptr<Texture> diffuse_texture
+)
+    : vertices_(vertices),
+      indices_(indices),
+      material_(std::move(material)),
+      diffuse_texture_(std::move(diffuse_texture)),
+      has_tex_coords_(has_tex_coords)
+{
+    LOG_INFO("Constructing mesh: vertices=", vertices_.size(), ", indices=", indices_.size());
+    setupMesh();
+}
+
 Mesh::~Mesh() {
     LOG_DEBUG("Destroying mesh: VAO=", VAO_, ", VBO=", VBO_, ", EBO=", EBO_);
 
@@ -193,24 +220,22 @@ void Mesh::draw(GLuint shader_program) const {
     const GLint specular_location = glGetUniformLocation(shader_program, "material.specular_color");
     const GLint ambient_location = glGetUniformLocation(shader_program, "material.ambient_color");
     const GLint shininess_location = glGetUniformLocation(shader_program, "material.shininess");
-
-    if (diffuse_location == -1) {
-        LOG_WARN("Uniform not found or optimized out: material.diffuse_color");
-    }
-    if (specular_location == -1) {
-        LOG_WARN("Uniform not found or optimized out: material.specular_color");
-    }
-    if (ambient_location == -1) {
-        LOG_WARN("Uniform not found or optimized out: material.ambient_color");
-    }
-    if (shininess_location == -1) {
-        LOG_WARN("Uniform not found or optimized out: material.shininess");
-    }
+    const GLint use_texture_location = glGetUniformLocation(shader_program, "use_texture");
+    const GLint diffuse_texture_location = glGetUniformLocation(shader_program, "diffuse_texture");
 
     glUniform3fv(diffuse_location, 1, glm::value_ptr(material_.diffuse_color));
     glUniform3fv(specular_location, 1, glm::value_ptr(material_.specular_color));
     glUniform3fv(ambient_location, 1, glm::value_ptr(material_.ambient_color));
     glUniform1f(shininess_location, material_.shininess);
+
+    const bool should_use_texture = isTextureEnabled();
+    glUniform1i(use_texture_location, should_use_texture);
+
+    if (should_use_texture) {
+        constexpr GLuint diffuse_texture_unit = 0;
+        diffuse_texture_->bind(diffuse_texture_unit);
+        glUniform1i(diffuse_texture_location, diffuse_texture_unit);
+    }
 
     glBindVertexArray(VAO_);
 
@@ -222,4 +247,8 @@ void Mesh::draw(GLuint shader_program) const {
     );
 
     glBindVertexArray(0);
+}
+
+bool Mesh::isTextureEnabled() const {
+    return use_texture_ && has_tex_coords_ && diffuse_texture_ != nullptr;
 }

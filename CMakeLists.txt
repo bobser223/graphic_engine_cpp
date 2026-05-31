@@ -123,6 +123,8 @@ add_executable(file_test
         engine/Node.cpp
         engine/Node.h
         tests/scene/scene_test_003.cpp
+        tests/scene/scene_test_004.cpp
+        tests/scene/scene_test_005.cpp
 )
 
 target_link_libraries(file_test ${libs}
@@ -199,4 +201,18 @@ add_executable(scene_test_003
 target_link_libraries(scene_test_003 PRIVATE engine_core
 )
 
+
+add_executable(scene_test_004
+        tests/scene/scene_test_004.cpp
+)
+
+target_link_libraries(scene_test_004 PRIVATE engine_core
+)
+
+add_executable(scene_test_005
+        tests/scene/scene_test_005.cpp
+)
+
+target_link_libraries(scene_test_005 PRIVATE engine_core
+)
 
