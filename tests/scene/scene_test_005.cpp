@@ -110,6 +110,10 @@ int main() {
             mesh.setDiffuseTexture(texture);
         }
 
+        // for (Mesh& mesh : loaded_model.meshes_) {
+        //     mesh.disableTexture();
+        // }
+
         Node root;
         Node& model_node = root.createChild(&loaded_model);
 
