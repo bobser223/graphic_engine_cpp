@@ -91,14 +91,15 @@ Mesh::~Mesh() {
 
 Mesh::Mesh(Mesh&& other) noexcept
     : vertices_(std::move(other.vertices_)),
-    indices_(std::move(other.indices_)),
-    material_(std::move(other.material_)),
-    VAO_(other.VAO_),
-    VBO_(other.VBO_),
-    EBO_(other.EBO_)
+      indices_(std::move(other.indices_)),
+      material_(std::move(other.material_)),
+      diffuse_texture_(std::move(other.diffuse_texture_)),
+      use_texture_(other.use_texture_),
+      has_tex_coords_(other.has_tex_coords_),
+      VAO_(other.VAO_),
+      VBO_(other.VBO_),
+      EBO_(other.EBO_)
 {
-    LOG_DEBUG("Move-constructing mesh: VAO=", VAO_, ", VBO=", VBO_, ", EBO=", EBO_);
-
     other.VAO_ = 0;
     other.VBO_ = 0;
     other.EBO_ = 0;
@@ -130,14 +131,14 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept {
     vertices_ = std::move(other.vertices_);
     indices_ = std::move(other.indices_);
     material_ = std::move(other.material_);
+    diffuse_texture_ = std::move(other.diffuse_texture_);
+
+    use_texture_ = other.use_texture_;
+    has_tex_coords_ = other.has_tex_coords_;
 
     VAO_ = other.VAO_;
     VBO_ = other.VBO_;
     EBO_ = other.EBO_;
-
-    other.VAO_ = 0;
-    other.VBO_ = 0;
-    other.EBO_ = 0;
 
     return *this;
 }

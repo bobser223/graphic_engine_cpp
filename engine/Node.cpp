@@ -67,10 +67,14 @@ glm::mat4 Node::getWorldMatrix() const {
 void Node::draw(const Shader& shader, const glm::mat4& parent_matrix) const {
     const glm::mat4 world_matrix = parent_matrix * getLocalMatrix();
 
-    LOG_TRACE("Drawing node: node=", this, ", model=", model_, ", children=", children_.size());
-
     if (model_ != nullptr) {
         shader.setUniform("model", world_matrix);
+
+        const glm::mat3 normal_matrix =
+            glm::transpose(glm::inverse(glm::mat3(world_matrix)));
+
+        shader.setUniform("normal_matrix", normal_matrix);
+
         model_->draw(shader.getProgramId());
     }
 
