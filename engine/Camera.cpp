@@ -4,14 +4,13 @@
 
 #include "Camera.h"
 
+#include "Logger.h"
+
 #include <algorithm>
 #include <cmath>
-
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/geometric.hpp>
 #include <glm/trigonometric.hpp>
-
-#include "Logger.h"
 
 float Camera::getVelocity(const float delta_time) const {
     return delta_time * camera_speed_;
@@ -27,32 +26,45 @@ glm::mat4 Camera::getViewMatrix() const {
 
 void Camera::goToward(const float delta_time) {
     camera_pos_ += camera_front_ * getVelocity(delta_time);
-    LOG_TRACE("Camera moved toward: dt=", delta_time, ", pos=(", camera_pos_.x, ", ", camera_pos_.y, ", ", camera_pos_.z, ")");
+    LOG_TRACE("Camera moved toward: dt=",
+              delta_time,
+              ", pos=(",
+              camera_pos_.x,
+              ", ",
+              camera_pos_.y,
+              ", ",
+              camera_pos_.z,
+              ")");
 }
 
 void Camera::goBack(const float delta_time) {
     camera_pos_ -= camera_front_ * getVelocity(delta_time);
-    LOG_TRACE("Camera moved back: dt=", delta_time, ", pos=(", camera_pos_.x, ", ", camera_pos_.y, ", ", camera_pos_.z, ")");
+    LOG_TRACE(
+        "Camera moved back: dt=", delta_time, ", pos=(", camera_pos_.x, ", ", camera_pos_.y, ", ", camera_pos_.z, ")");
 }
 
 void Camera::goRight(const float delta_time) {
     camera_pos_ += getCameraRight() * getVelocity(delta_time);
-    LOG_TRACE("Camera moved right: dt=", delta_time, ", pos=(", camera_pos_.x, ", ", camera_pos_.y, ", ", camera_pos_.z, ")");
+    LOG_TRACE(
+        "Camera moved right: dt=", delta_time, ", pos=(", camera_pos_.x, ", ", camera_pos_.y, ", ", camera_pos_.z, ")");
 }
 
 void Camera::goLeft(const float delta_time) {
     camera_pos_ -= getCameraRight() * getVelocity(delta_time);
-    LOG_TRACE("Camera moved left: dt=", delta_time, ", pos=(", camera_pos_.x, ", ", camera_pos_.y, ", ", camera_pos_.z, ")");
+    LOG_TRACE(
+        "Camera moved left: dt=", delta_time, ", pos=(", camera_pos_.x, ", ", camera_pos_.y, ", ", camera_pos_.z, ")");
 }
 
 void Camera::goUp(const float delta_time) {
     camera_pos_ += camera_up_ * getVelocity(delta_time);
-    LOG_TRACE("Camera moved up: dt=", delta_time, ", pos=(", camera_pos_.x, ", ", camera_pos_.y, ", ", camera_pos_.z, ")");
+    LOG_TRACE(
+        "Camera moved up: dt=", delta_time, ", pos=(", camera_pos_.x, ", ", camera_pos_.y, ", ", camera_pos_.z, ")");
 }
 
 void Camera::goDown(const float delta_time) {
     camera_pos_ -= camera_up_ * getVelocity(delta_time);
-    LOG_TRACE("Camera moved down: dt=", delta_time, ", pos=(", camera_pos_.x, ", ", camera_pos_.y, ", ", camera_pos_.z, ")");
+    LOG_TRACE(
+        "Camera moved down: dt=", delta_time, ", pos=(", camera_pos_.x, ", ", camera_pos_.y, ", ", camera_pos_.z, ")");
 }
 
 void Camera::rotateYawClockwiseByDegrees(const float degrees) {
@@ -112,7 +124,16 @@ void Camera::rotateByMouseOffset(const float xoffset, const float yoffset, const
 
     clampPitch();
     updateCameraFront();
-    LOG_TRACE("Camera rotated by mouse: xoffset=", xoffset, ", yoffset=", yoffset, ", sensitivity=", sensitivity, ", yaw=", yaw_, ", pitch=", pitch_);
+    LOG_TRACE("Camera rotated by mouse: xoffset=",
+              xoffset,
+              ", yoffset=",
+              yoffset,
+              ", sensitivity=",
+              sensitivity,
+              ", yaw=",
+              yaw_,
+              ", pitch=",
+              pitch_);
 }
 
 void Camera::clampPitch() {

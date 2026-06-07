@@ -3,24 +3,21 @@
 //
 
 
-#include <string>
+#include "../../engine/Camera.h"
+#include "../../engine/Model.h"
+#include "../../engine/Node.h"
+#include "../../engine/Shader.h"
+#include "../../engine/Texture.h"
+#include "../../utils/loader/ModelLoader.h"
+#include "Logger.h"
+#include "defines.h"
 
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
+#include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
-#include "../../engine/Model.h"
-#include "../../utils/loader/ModelLoader.h"
-#include "../../engine/Camera.h"
-#include "../../engine/Shader.h"
-#include "../../engine/Texture.h"
-#include "../../engine/Node.h"
-
-#include "defines.h"
-#include "Logger.h"
+#include <string>
 
 
 int main() {
@@ -43,13 +40,7 @@ int main() {
     constexpr int window_width = 640;
     constexpr int window_height = 480;
 
-    GLFWwindow* window = glfwCreateWindow(
-        window_width,
-        window_height,
-        "Model Loader Test",
-        nullptr,
-        nullptr
-    );
+    GLFWwindow* window = glfwCreateWindow(window_width, window_height, "Model Loader Test", nullptr, nullptr);
 
     if (window == nullptr) {
         LOG_ERROR("Failed to create GLFW window");
@@ -75,11 +66,7 @@ int main() {
 
 
     glm::mat4 projection = glm::perspective(
-        glm::radians(45.0f),
-        static_cast<float>(window_width) / static_cast<float>(window_height),
-        0.1f,
-        100.0f
-    );
+        glm::radians(45.0f), static_cast<float>(window_width) / static_cast<float>(window_height), 0.1f, 100.0f);
 
 
 
@@ -88,19 +75,15 @@ int main() {
     float last_frame_time = 0.0f;
 
 
-    {// Context for RAII shaders, textures and model
+    { // Context for RAII shaders, textures and model
 
-        Shader shader(
-         PROJECT_PATH / "tests" / "scene" / "scene_test_004.vert",
-         PROJECT_PATH / "tests" / "scene" / "scene_test_004.frag"
-     );
+        Shader shader(PROJECT_PATH / "tests" / "scene" / "scene_test_004.vert",
+                      PROJECT_PATH / "tests" / "scene" / "scene_test_004.frag");
 
         Texture texture(PROJECT_PATH / "data/texture1.png", TextureType::Diffuse);
 
-        Model loaded_model = ModelLoader::loadModel(
-            PROJECT_PATH / "data/teapot/teapot.obj",
-            aiProcess_Triangulate | aiProcess_GenSmoothNormals
-        );
+        Model loaded_model = ModelLoader::loadModel(PROJECT_PATH / "data/teapot/teapot.obj",
+                                                    aiProcess_Triangulate | aiProcess_GenSmoothNormals);
 
         Node root;
         Node& model_node = root.createChild(&loaded_model);
@@ -144,19 +127,19 @@ int main() {
             }
 
             if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-                camera.rotatePitchUpByDegrees(delta_time*rotation_speed);
+                camera.rotatePitchUpByDegrees(delta_time * rotation_speed);
             }
 
             if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-                camera.rotatePitchDownByDegrees(delta_time*rotation_speed);
+                camera.rotatePitchDownByDegrees(delta_time * rotation_speed);
             }
 
             if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-                camera.rotateYawClockwiseByDegrees(delta_time*rotation_speed);
+                camera.rotateYawClockwiseByDegrees(delta_time * rotation_speed);
             }
 
             if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-                camera.rotateYawCounterClockwiseByDegrees(delta_time*rotation_speed);
+                camera.rotateYawCounterClockwiseByDegrees(delta_time * rotation_speed);
             }
 
             if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
@@ -166,19 +149,19 @@ int main() {
             // ====================== ROOT ========================
 
             if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) {
-                root.transform_.moveDown(delta_time*transition_speed);
+                root.transform_.moveDown(delta_time * transition_speed);
             }
 
             if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
-                root.transform_.moveUp(delta_time*transition_speed);
+                root.transform_.moveUp(delta_time * transition_speed);
             }
 
             if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
-                root.transform_.moveLeft(delta_time*transition_speed);
+                root.transform_.moveLeft(delta_time * transition_speed);
             }
 
             if (glfwGetKey(window, GLFW_KEY_SEMICOLON) == GLFW_PRESS) {
-                root.transform_.moveRight(delta_time*transition_speed);
+                root.transform_.moveRight(delta_time * transition_speed);
             }
 
 

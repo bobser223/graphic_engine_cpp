@@ -35,6 +35,7 @@ add_library(engine_core
         engine/Texture.cpp
         engine/Transform.cpp
         engine/Node.cpp
+        engine/light.h
 )
 
 target_include_directories(engine_core PUBLIC
@@ -127,6 +128,7 @@ add_executable(file_test
         tests/scene/scene_test_005.cpp
         tests/scene/scene_test_006.cpp
         tests/scene/scene_test_007.cpp
+        tests/scene/scene_test_008.cpp
 )
 
 target_link_libraries(file_test ${libs}
@@ -228,4 +230,9 @@ add_executable(scene_test_007
         tests/scene/scene_test_007.cpp
 )
 target_link_libraries(scene_test_007 PRIVATE engine_core
+)
+add_executable(scene_test_008
+        tests/scene/scene_test_008.cpp
+)
+target_link_libraries(scene_test_008 PRIVATE engine_core
 )

@@ -1,0 +1,55 @@
+BasedOnStyle: LLVM
+
+# === Відступи ===
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+# public/private на рівні class
+AccessModifierOffset: -4
+
+# === Дужки ===
+BreakBeforeBraces: Attach
+
+# === Довжина рядка ===
+ColumnLimit: 120
+
+# === Вказівники і посилання ===
+PointerAlignment: Left
+ReferenceAlignment: Left
+
+# int* ptr; а не int *ptr;
+
+# === Include ===
+SortIncludes: true
+IncludeBlocks: Regroup
+
+# === Конструктори ===
+BreakConstructorInitializers: BeforeComma
+
+ConstructorInitializerIndentWidth: 4
+
+# === Параметри функцій ===
+BinPackParameters: false
+BinPackArguments: false
+
+# === Короткі штуки не пхати в один рядок ===
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+
+# === switch ===
+IndentCaseLabels: true
+
+# === namespace ===
+NamespaceIndentation: All
+
+# === Lambda ===
+LambdaBodyIndentation: Signature
+
+# === Порожні рядки ===
+MaxEmptyLinesToKeep: 3
+
+# === C++ стандарт ===
+Standard: c++20

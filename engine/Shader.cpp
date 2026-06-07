@@ -4,13 +4,13 @@
 
 #include "Shader.h"
 
+#include "Logger.h"
+#include "glm/gtc/type_ptr.hpp"
+
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
 #include <utility>
-
-#include "Logger.h"
-#include "glm/gtc/type_ptr.hpp"
 
 Shader::Shader(const std::string& vertex_path, const std::string& fragment_path) {
     LOG_INFO("Creating shader program: vertex=", vertex_path, ", fragment=", fragment_path);
@@ -155,9 +155,7 @@ GLuint Shader::createShaderFromFile(const GLenum shader_type, const std::filesys
 
         glDeleteShader(shader);
 
-        throw std::runtime_error(
-            "Shader compilation failed: " + path.string() + "\n" + info_log
-        );
+        throw std::runtime_error("Shader compilation failed: " + path.string() + "\n" + info_log);
     }
 
     LOG_INFO("Shader compiled successfully: ", path, " id=", shader);

@@ -29,7 +29,32 @@ void processKeyboardInput(
     const float rotation_speed,
     const float transition_speed
 ) {
-    // ====================== CAMERA ========================
+    // ====================== MOUSE CAMERA ROTATION ========================
+
+    static bool first_mouse = true;
+    static double last_mouse_x = 0.0;
+    static double last_mouse_y = 0.0;
+
+    double mouse_x = 0.0;
+    double mouse_y = 0.0;
+
+    glfwGetCursorPos(window, &mouse_x, &mouse_y);
+
+    if (first_mouse) {
+        last_mouse_x = mouse_x;
+        last_mouse_y = mouse_y;
+        first_mouse = false;
+    }
+
+    const float xoffset = static_cast<float>(mouse_x - last_mouse_x);
+    const float yoffset = static_cast<float>(last_mouse_y - mouse_y);
+
+    last_mouse_x = mouse_x;
+    last_mouse_y = mouse_y;
+
+    camera.rotateByMouseOffset(xoffset, yoffset);
+
+    // ====================== CAMERA MOVEMENT ========================
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         camera.goToward(delta_time);
@@ -55,6 +80,7 @@ void processKeyboardInput(
         camera.goDown(delta_time);
     }
 
+    // arrows backup
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
         camera.rotatePitchUpByDegrees(delta_time * rotation_speed);
     }
@@ -75,7 +101,7 @@ void processKeyboardInput(
         glfwSetWindowShouldClose(window, true);
     }
 
-    // ====================== ROOT ========================
+    // ====================== MODEL ========================
 
     if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) {
         node_1.transform_.moveDown(delta_time * transition_speed);
@@ -103,20 +129,29 @@ void processKeyboardInput(
 
     // ====================== LIGHT ========================
 
+    // ====================== LIGHT ========================
+    // Аналогічно до керування моделлю:
+    // U = J           вниз
+    // I = K           вгору
+    // O = L           вліво
+    // P = ;           вправо
+    // [ = '           вперед
+    // ] = \           назад
+
     if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS) {
-        node_light.transform_.moveLeft(delta_time * transition_speed);
+        node_light.transform_.moveDown(delta_time * transition_speed);
     }
 
     if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS) {
-        node_light.transform_.moveRight(delta_time * transition_speed);
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
         node_light.transform_.moveUp(delta_time * transition_speed);
     }
 
+    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
+        node_light.transform_.moveLeft(delta_time * transition_speed);
+    }
+
     if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
-        node_light.transform_.moveDown(delta_time * transition_speed);
+        node_light.transform_.moveRight(delta_time * transition_speed);
     }
 
     if (glfwGetKey(window, GLFW_KEY_LEFT_BRACKET) == GLFW_PRESS) {
@@ -150,6 +185,7 @@ int main() {
     constexpr int window_height = 480;
 
     GLFWwindow* window = glfwCreateWindow(window_width, window_height, "Model Loader Test", nullptr, nullptr);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // Capture mouse cursor for fly camera rotation
 
     if (window == nullptr) {
         LOG_ERROR("Failed to create GLFW window");
@@ -170,6 +206,10 @@ int main() {
 
     glEnable(GL_DEPTH_TEST);
 
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CCW);
+
 
     Camera camera;
 
@@ -186,14 +226,14 @@ int main() {
 
     { // Context for RAII shaders, textures and model
 
-        Shader shader(PROJECT_PATH / "tests" / "scene" / "scene_test_007.vert",
-                      PROJECT_PATH / "tests" / "scene" / "scene_test_007.frag");
+        Shader shader(PROJECT_PATH / "tests" / "scene" / "scene_test_008.vert",
+                      PROJECT_PATH / "tests" / "scene" / "scene_test_008.frag");
 
         auto texture = std::make_shared<Texture>((PROJECT_PATH / "data/texture1.png").string(), TextureType::Diffuse);
         auto white_texture = std::make_shared<Texture>((PROJECT_PATH / "data/textures/white.jpg").string(), TextureType::Diffuse);
 
 
-        Model loaded_model = ModelLoader::loadModel(PROJECT_PATH / "data/plate/plate.obj",
+        Model loaded_model = ModelLoader::loadModel(PROJECT_PATH / "data/mmf/faculty.obj",
                                                     aiProcess_Triangulate | aiProcess_GenSmoothNormals);
 
         Model cube_for_light = ModelLoader::loadModel(PROJECT_PATH / "data/cube.obj",aiProcess_Triangulate | aiProcess_GenSmoothNormals);
@@ -201,6 +241,19 @@ int main() {
         // for (Mesh& mesh : loaded_model.meshes_) {
         //     mesh.setDiffuseTexture(texture);
         // }
+
+        // for (Mesh& mesh : loaded_model.meshes_) {
+        //     mesh.setMaterial(Material::Gold());
+        // }
+
+        // for (Mesh& mesh : loaded_model.meshes_) {
+        //     mesh.setMaterial(Material::Bronze());
+        // }
+        for (Mesh& mesh : loaded_model.meshes_) {
+            mesh.setMaterial(Material::Plastic());
+        }
+
+        // ========== Light cube ======
 
         for (Mesh& mesh : cube_for_light.meshes_) {
             mesh.setDiffuseTexture(white_texture);
@@ -219,7 +272,8 @@ int main() {
         model_node.transform_.position_ = glm::vec3(0.0f, 0.42f, -4.0f);
         model_node.transform_.scale_ = glm::vec3(0.030f);
 
-        light_node.transform_.position_ = glm::vec3(2.0f, 4.0f, 2.0f);
+        // light_node.transform_.position_ = glm::vec3(2.0f, 4.0f, 2.0f);
+        light_node.transform_.position_ = model_node.transform_.position_ + glm::vec3(0.0f, 1.5f, 0.0f);
         light_node.transform_.scale_ = glm::vec3(0.009f);
 
 
@@ -276,3 +330,6 @@ int main() {
     LOG_INFO("scene_test_003 completed");
     return 0;
 }
+//
+// Created by Volodymyr Avvakumov on 07.06.2026.
+//

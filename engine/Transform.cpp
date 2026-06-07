@@ -4,27 +4,22 @@
 
 #include "Transform.h"
 
-#include <cmath>
-
-#include <glm/gtc/matrix_transform.hpp>
-
 #include "Logger.h"
 
-namespace {
-constexpr float same_direction_threshold = 0.9999f;
-constexpr float opposite_direction_threshold = -0.9999f;
-constexpr float fallback_axis_length_threshold = 0.0001f;
-constexpr float half_turn_degrees = 180.0f;
-}
+#include <cmath>
+#include <glm/gtc/matrix_transform.hpp>
 
-Transform::Transform(
-    const glm::vec3& position,
-    const glm::quat& rotation,
-    const glm::vec3& scale
-)
-    : position_(position),
-      rotation_(glm::normalize(rotation)),
-      scale_(scale) {
+namespace {
+    constexpr float same_direction_threshold = 0.9999f;
+    constexpr float opposite_direction_threshold = -0.9999f;
+    constexpr float fallback_axis_length_threshold = 0.0001f;
+    constexpr float half_turn_degrees = 180.0f;
+} // namespace
+
+Transform::Transform(const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale)
+    : position_(position)
+    , rotation_(glm::normalize(rotation))
+    , scale_(scale) {
     LOG_DEBUG("Transform created: position=(", position_.x, ", ", position_.y, ", ", position_.z, ")");
 }
 
@@ -60,18 +55,12 @@ void Transform::setRotationEulerDegrees(const glm::vec3& degrees) {
 }
 
 void Transform::setRotationAxisAngleDegrees(const float degrees, const glm::vec3& axis) {
-    rotation_ = glm::angleAxis(
-        glm::radians(degrees),
-        glm::normalize(axis)
-    );
+    rotation_ = glm::angleAxis(glm::radians(degrees), glm::normalize(axis));
     LOG_TRACE("Transform rotation set from axis-angle: degrees=", degrees);
 }
 
 void Transform::rotateAxisAngleDegrees(const float degrees, const glm::vec3& axis) {
-    const glm::quat delta = glm::angleAxis(
-        glm::radians(degrees),
-        glm::normalize(axis)
-    );
+    const glm::quat delta = glm::angleAxis(glm::radians(degrees), glm::normalize(axis));
 
     rotation_ = glm::normalize(delta * rotation_);
     LOG_TRACE("Transform rotated by axis-angle: degrees=", degrees);
@@ -176,20 +165,14 @@ void Transform::moveDown(const float distance) {
 }
 
 void Transform::rotateWorldAxisAngleDegrees(const float degrees, const glm::vec3& axis) {
-    const glm::quat delta = glm::angleAxis(
-        glm::radians(degrees),
-        glm::normalize(axis)
-    );
+    const glm::quat delta = glm::angleAxis(glm::radians(degrees), glm::normalize(axis));
 
     rotation_ = glm::normalize(delta * rotation_);
     LOG_TRACE("Transform rotated around world axis: degrees=", degrees);
 }
 
 void Transform::rotateLocalAxisAngleDegrees(const float degrees, const glm::vec3& axis) {
-    const glm::quat delta = glm::angleAxis(
-        glm::radians(degrees),
-        glm::normalize(axis)
-    );
+    const glm::quat delta = glm::angleAxis(glm::radians(degrees), glm::normalize(axis));
 
     rotation_ = glm::normalize(rotation_ * delta);
     LOG_TRACE("Transform rotated around local axis: degrees=", degrees);

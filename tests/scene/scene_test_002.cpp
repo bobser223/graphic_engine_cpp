@@ -3,31 +3,28 @@
 //
 
 
-#include <iostream>
-#include <string>
+#include "../../engine/Camera.h"
+#include "../../engine/Material.h"
+#include "../../engine/Mesh.h"
+#include "../../engine/Model.h"
+#include "../../engine/Node.cpp"
+#include "../../engine/Node.h"
+#include "../../engine/Shader.h"
+#include "../../engine/Texture.h"
+#include "../../utils/loader/ModelLoader.h"
+#include "Logger.h"
+#include "creator.h"
+#include "defines.h"
+#include "reader.h"
+#include "texture_creator.h"
 
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
+#include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
-#include "../../engine/Mesh.h"
-#include "../../engine/Material.h"
-#include "../../engine/Model.h"
-#include "../../utils/loader/ModelLoader.h"
-#include "../../engine/Camera.h"
-#include "../../engine/Shader.h"
-#include "../../engine/Texture.h"
-#include "../../engine/Node.h"
-#include "../../engine/Node.cpp"
-
-#include "defines.h"
-#include "reader.h"
-#include "creator.h"
-#include "texture_creator.h"
-#include "Logger.h"
+#include <iostream>
+#include <string>
 
 
 int main() {
@@ -47,13 +44,7 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    GLFWwindow* window = glfwCreateWindow(
-        640,
-        480,
-        "Model Loader Test",
-        nullptr,
-        nullptr
-    );
+    GLFWwindow* window = glfwCreateWindow(640, 480, "Model Loader Test", nullptr, nullptr);
 
     if (window == nullptr) {
         LOG_ERROR("Failed to create GLFW window");
@@ -78,12 +69,7 @@ int main() {
     Camera camera;
 
 
-    glm::mat4 projection = glm::perspective(
-        glm::radians(45.0f),
-        640.0f / 480.0f,
-        0.1f,
-        100.0f
-    );
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), 640.0f / 480.0f, 0.1f, 100.0f);
 
 
 
@@ -91,19 +77,15 @@ int main() {
     float last_frame_time = 0.0f;
 
 
-    {// Context for RAII shaders, textures and model
+    { // Context for RAII shaders, textures and model
 
-        Shader shader(
-         PROJECT_PATH / "tests" / "scene" / "scene_test_001.vert",
-         PROJECT_PATH / "tests" / "scene" / "scene_test_001.frag"
-     );
+        Shader shader(PROJECT_PATH / "tests" / "scene" / "scene_test_001.vert",
+                      PROJECT_PATH / "tests" / "scene" / "scene_test_001.frag");
 
         Texture texture(PROJECT_PATH / "data/texture1.png", TextureType::Diffuse);
 
-        Model loaded_model = ModelLoader::loadModel(
-            PROJECT_PATH / "data/plate/plate.obj",
-            aiProcess_Triangulate | aiProcess_GenSmoothNormals
-        );
+        Model loaded_model = ModelLoader::loadModel(PROJECT_PATH / "data/plate/plate.obj",
+                                                    aiProcess_Triangulate | aiProcess_GenSmoothNormals);
 
         Node root;
         Node& model_node = root.createChild(&loaded_model);
@@ -144,25 +126,24 @@ int main() {
             }
 
             if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-                camera.rotatePitchUpByDegrees(delta_time*rotation_speed);
+                camera.rotatePitchUpByDegrees(delta_time * rotation_speed);
             }
 
             if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-                camera.rotatePitchDownByDegrees(delta_time*rotation_speed);
+                camera.rotatePitchDownByDegrees(delta_time * rotation_speed);
             }
 
             if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-                camera.rotateYawClockwiseByDegrees(delta_time*rotation_speed);
+                camera.rotateYawClockwiseByDegrees(delta_time * rotation_speed);
             }
 
             if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-                camera.rotateYawCounterClockwiseByDegrees(delta_time*rotation_speed);
+                camera.rotateYawCounterClockwiseByDegrees(delta_time * rotation_speed);
             }
 
             if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
                 glfwSetWindowShouldClose(window, true);
             }
-
 
 
 

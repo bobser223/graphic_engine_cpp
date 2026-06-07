@@ -4,12 +4,12 @@
 
 #include "Node.h"
 
-#include <stdexcept>
-#include <utility>
-
 #include "Logger.h"
 #include "Model.h"
 #include "Shader.h"
+
+#include <stdexcept>
+#include <utility>
 
 Node::Node(Model* model)
     : model_(model) {
@@ -70,8 +70,7 @@ void Node::draw(const Shader& shader, const glm::mat4& parent_matrix) const {
     if (model_ != nullptr) {
         shader.setUniform("model", world_matrix);
 
-        const glm::mat3 normal_matrix =
-            glm::transpose(glm::inverse(glm::mat3(world_matrix)));
+        const glm::mat3 normal_matrix = glm::transpose(glm::inverse(glm::mat3(world_matrix)));
 
         shader.setUniform("normal_matrix", normal_matrix);
 

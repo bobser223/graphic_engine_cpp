@@ -4,19 +4,13 @@
 
 #ifndef ENGINE_TEXTURE_H
 #define ENGINE_TEXTURE_H
+#include "glad/glad.h"
+
 #include <filesystem>
 #include <string>
 
-#include "glad/glad.h"
 
-
-enum class TextureType {
-    Diffuse,
-    Specular,
-    Normal,
-    Unknown
-};
-
+enum class TextureType { Diffuse, Specular, Normal, Unknown };
 
 
 
@@ -24,11 +18,7 @@ class Texture {
 
 
 public:
-    explicit Texture(
-        std::string  path,
-        TextureType type = TextureType::Diffuse,
-        bool flip_vertically = true
-    );
+    explicit Texture(std::string path, TextureType type = TextureType::Diffuse, bool flip_vertically = true);
 
     ~Texture();
 
@@ -46,10 +36,7 @@ public:
     [[nodiscard]] GLenum getTarget() const;
 
 private:
-    static GLuint createTextureFromFile(
-        const std::filesystem::path& texture_path,
-        bool flip_vertically
-    );
+    static GLuint createTextureFromFile(const std::filesystem::path& texture_path, bool flip_vertically);
 
     GLuint id_ = 0;
     GLenum target_ = GL_TEXTURE_2D;
@@ -59,4 +46,4 @@ private:
 };
 
 
-#endif //ENGINE_TEXTURE_H
+#endif // ENGINE_TEXTURE_H

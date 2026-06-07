@@ -5,12 +5,11 @@
 #ifndef ENGINE_SHADER_H
 #define ENGINE_SHADER_H
 
+#include "glad/glad.h"
+#include "glm/glm.hpp"
+
 #include <filesystem>
 #include <string>
-
-#include "glad/glad.h"
-
-#include "glm/glm.hpp"
 
 
 class Shader {
@@ -49,4 +48,4 @@ private:
     GLuint program_id_ = 0;
 };
 
-#endif //ENGINE_SHADER_H
+#endif // ENGINE_SHADER_H

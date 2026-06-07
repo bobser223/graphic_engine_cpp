@@ -4,12 +4,11 @@
 
 #ifndef ENGINE_NODE_H
 #define ENGINE_NODE_H
-#include <memory>
-#include <vector>
+#include "Transform.h"
 
 #include <glm/mat4x4.hpp>
-
-#include "Transform.h"
+#include <memory>
+#include <vector>
 
 class Model;
 class Shader;
@@ -17,8 +16,8 @@ class Shader;
 class Node {
 public:
     Transform transform_;
-    Node* parent_= nullptr;
-    Model* model_=nullptr;
+    Node* parent_ = nullptr;
+    Model* model_ = nullptr;
 
     std::vector<std::unique_ptr<Node>> children_;
 
@@ -42,4 +41,4 @@ public:
     void draw(const Shader& shader, const glm::mat4& parent_matrix = glm::mat4(1.0f)) const;
 };
 
-#endif //ENGINE_NODE_H
+#endif // ENGINE_NODE_H

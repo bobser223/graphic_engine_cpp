@@ -8,11 +8,7 @@ class Transform {
 public:
     Transform() = default;
 
-    Transform(
-        const glm::vec3& position,
-        const glm::quat& rotation,
-        const glm::vec3& scale
-    );
+    Transform(const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale);
 
     [[nodiscard]] glm::mat4 getMatrix() const;
 

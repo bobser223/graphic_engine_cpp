@@ -14,8 +14,7 @@ in vec2 TexCoord;
 
 out vec4 FragColor;
 
-void main()
-{
+void main() {
     vec4 texel = texture(diffuse_texture, TexCoord);
     FragColor = vec4(material.diffuse_color, 1.0) * texel;
 }

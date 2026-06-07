@@ -1,24 +1,21 @@
-#include <iostream>
-#include <string>
+#include "../../engine/Camera.h"
+#include "../../engine/Material.h"
+#include "../../engine/Mesh.h"
+#include "../../engine/Model.h"
+#include "../../utils/loader/ModelLoader.h"
+#include "Logger.h"
+#include "creator.h"
+#include "defines.h"
+#include "reader.h"
+#include "texture_creator.h"
 
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
+#include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
-#include "../../engine/Mesh.h"
-#include "../../engine/Material.h"
-#include "../../engine/Model.h"
-#include "../../utils/loader/ModelLoader.h"
-#include "../../engine/Camera.h"
-
-#include "defines.h"
-#include "reader.h"
-#include "creator.h"
-#include "texture_creator.h"
-#include "Logger.h"
+#include <iostream>
+#include <string>
 
 int main() {
     LOG_INFO("Starting scene_test_001");
@@ -37,13 +34,7 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    GLFWwindow* window = glfwCreateWindow(
-        640,
-        480,
-        "Model Loader Test",
-        nullptr,
-        nullptr
-    );
+    GLFWwindow* window = glfwCreateWindow(640, 480, "Model Loader Test", nullptr, nullptr);
 
     if (window == nullptr) {
         LOG_ERROR("Failed to create GLFW window");
@@ -64,15 +55,11 @@ int main() {
 
     glEnable(GL_DEPTH_TEST);
 
-    GLuint vertex_shader = createShaderFromFile(
-        GL_VERTEX_SHADER,
-        PROJECT_PATH /"tests" /"scene"/"scene_test_001.vert"
-    );
+    GLuint vertex_shader =
+        createShaderFromFile(GL_VERTEX_SHADER, PROJECT_PATH / "tests" / "scene" / "scene_test_001.vert");
 
-    GLuint fragment_shader = createShaderFromFile(
-        GL_FRAGMENT_SHADER,
-        PROJECT_PATH /"tests" /"scene"/"scene_test_001.frag"
-    );
+    GLuint fragment_shader =
+        createShaderFromFile(GL_FRAGMENT_SHADER, PROJECT_PATH / "tests" / "scene" / "scene_test_001.frag");
 
     GLuint shader_program = glCreateProgram();
     glAttachShader(shader_program, vertex_shader);
@@ -109,22 +96,15 @@ int main() {
     }
     LOG_INFO("Diffuse texture ready: id=", diffuse_texture);
 
-    Model loaded_model = ModelLoader::loadModel(
-        PROJECT_PATH / "data/plate/plate.obj",
-        aiProcess_Triangulate | aiProcess_GenSmoothNormals
-    );
+    Model loaded_model = ModelLoader::loadModel(PROJECT_PATH / "data/plate/plate.obj",
+                                                aiProcess_Triangulate | aiProcess_GenSmoothNormals);
     LOG_INFO("Scene model ready: meshes=", loaded_model.meshes_.size());
 
     Camera camera;
 
     glm::mat4 view = camera.getViewMatrix();
 
-    glm::mat4 projection = glm::perspective(
-        glm::radians(45.0f),
-        640.0f / 480.0f,
-        0.1f,
-        100.0f
-    );
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), 640.0f / 480.0f, 0.1f, 100.0f);
 
 
     float rotation_speed = 90.0f;
@@ -160,19 +140,19 @@ int main() {
         }
 
         if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-            camera.rotatePitchUpByDegrees(delta_time*rotation_speed);
+            camera.rotatePitchUpByDegrees(delta_time * rotation_speed);
         }
 
         if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-            camera.rotatePitchDownByDegrees(delta_time*rotation_speed);
+            camera.rotatePitchDownByDegrees(delta_time * rotation_speed);
         }
 
         if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-            camera.rotateYawClockwiseByDegrees(delta_time*rotation_speed);
+            camera.rotateYawClockwiseByDegrees(delta_time * rotation_speed);
         }
 
         if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-            camera.rotateYawCounterClockwiseByDegrees(delta_time*rotation_speed);
+            camera.rotateYawCounterClockwiseByDegrees(delta_time * rotation_speed);
         }
 
         glm::mat4 view = camera.getViewMatrix();
@@ -196,26 +176,11 @@ int main() {
         model = glm::scale(model, glm::vec3(0.03f));
         model = glm::translate(model, glm::vec3(0.0f, 14.0f, 0.0f));
 
-        glUniformMatrix4fv(
-            model_location,
-            1,
-            GL_FALSE,
-            glm::value_ptr(model)
-        );
+        glUniformMatrix4fv(model_location, 1, GL_FALSE, glm::value_ptr(model));
 
-        glUniformMatrix4fv(
-            view_location,
-            1,
-            GL_FALSE,
-            glm::value_ptr(view)
-        );
+        glUniformMatrix4fv(view_location, 1, GL_FALSE, glm::value_ptr(view));
 
-        glUniformMatrix4fv(
-            projection_location,
-            1,
-            GL_FALSE,
-            glm::value_ptr(projection)
-        );
+        glUniformMatrix4fv(projection_location, 1, GL_FALSE, glm::value_ptr(projection));
 
         loaded_model.draw(shader_program);
 
