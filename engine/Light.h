@@ -14,10 +14,13 @@ struct Light {
     glm::vec3 color = glm::vec3(1.0f);
     float intensity = 1.0f;
 
-    Light(const glm::vec3& position, const glm::vec3& color,const float intensity) : position(position), color(color), intensity(intensity) {}
+    Light(const glm::vec3& position, const glm::vec3& color, const float intensity)
+        : position(position)
+        , color(color)
+        , intensity(intensity) {}
     Light() = default;
     ~Light() = default;
 };
 
 
-#endif //ENGINE_LIGHT_H
+#endif // ENGINE_LIGHT_H

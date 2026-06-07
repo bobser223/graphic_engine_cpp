@@ -12,45 +12,45 @@
 #include <unordered_set>
 
 namespace {
-struct MeshVertexStats {
-    glm::vec2 min_tex_coord{std::numeric_limits<float>::max()};
-    glm::vec2 max_tex_coord{std::numeric_limits<float>::lowest()};
-    float min_normal_length = std::numeric_limits<float>::max();
-    float max_normal_length = 0.0f;
-    std::size_t zero_normal_count = 0;
-};
+    struct MeshVertexStats {
+        glm::vec2 min_tex_coord{std::numeric_limits<float>::max()};
+        glm::vec2 max_tex_coord{std::numeric_limits<float>::lowest()};
+        float min_normal_length = std::numeric_limits<float>::max();
+        float max_normal_length = 0.0f;
+        std::size_t zero_normal_count = 0;
+    };
 
-MeshVertexStats collectVertexStats(const std::vector<Vertex>& vertices) {
-    MeshVertexStats stats;
+    MeshVertexStats collectVertexStats(const std::vector<Vertex>& vertices) {
+        MeshVertexStats stats;
 
-    for (const Vertex& vertex : vertices) {
-        stats.min_tex_coord.x = std::min(stats.min_tex_coord.x, vertex.tex_coord_.x);
-        stats.min_tex_coord.y = std::min(stats.min_tex_coord.y, vertex.tex_coord_.y);
-        stats.max_tex_coord.x = std::max(stats.max_tex_coord.x, vertex.tex_coord_.x);
-        stats.max_tex_coord.y = std::max(stats.max_tex_coord.y, vertex.tex_coord_.y);
+        for (const Vertex& vertex : vertices) {
+            stats.min_tex_coord.x = std::min(stats.min_tex_coord.x, vertex.tex_coord_.x);
+            stats.min_tex_coord.y = std::min(stats.min_tex_coord.y, vertex.tex_coord_.y);
+            stats.max_tex_coord.x = std::max(stats.max_tex_coord.x, vertex.tex_coord_.x);
+            stats.max_tex_coord.y = std::max(stats.max_tex_coord.y, vertex.tex_coord_.y);
 
-        const float normal_length = glm::length(vertex.normal_);
-        stats.min_normal_length = std::min(stats.min_normal_length, normal_length);
-        stats.max_normal_length = std::max(stats.max_normal_length, normal_length);
-        if (normal_length < 0.0001f) {
-            ++stats.zero_normal_count;
+            const float normal_length = glm::length(vertex.normal_);
+            stats.min_normal_length = std::min(stats.min_normal_length, normal_length);
+            stats.max_normal_length = std::max(stats.max_normal_length, normal_length);
+            if (normal_length < 0.0001f) {
+                ++stats.zero_normal_count;
+            }
+        }
+
+        if (vertices.empty()) {
+            stats.min_tex_coord = glm::vec2(0.0f);
+            stats.max_tex_coord = glm::vec2(0.0f);
+            stats.min_normal_length = 0.0f;
+        }
+
+        return stats;
+    }
+
+    void logMissingUniform(const char* name, const GLint location) {
+        if (location == -1) {
+            LOG_WARN("Mesh shader uniform is missing or optimized out: ", name);
         }
     }
-
-    if (vertices.empty()) {
-        stats.min_tex_coord = glm::vec2(0.0f);
-        stats.max_tex_coord = glm::vec2(0.0f);
-        stats.min_normal_length = 0.0f;
-    }
-
-    return stats;
-}
-
-void logMissingUniform(const char* name, const GLint location) {
-    if (location == -1) {
-        LOG_WARN("Mesh shader uniform is missing or optimized out: ", name);
-    }
-}
 } // namespace
 
 std::ostream& operator<<(std::ostream& os, const Vertex& vertex) {
